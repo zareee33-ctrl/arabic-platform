@@ -9,7 +9,7 @@ const load=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify
 const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 let selected=null, originalImage=null, drawing=false, tool='pen';
-const titles={dashboard:'لوحة المعلم',lessons:'الدروس والأكواد',students:'الطلاب',profile:'ملف الطالب الشامل',portfolio:'ملفات الإنجاز',learning:'تفضيلات التعلم',papers:'أعمال الطلاب',analytics:'المستوى والتقدم'};
+const titles={dashboard:'لوحة المعلم',lessons:'الدروس والأكواد',students:'الطلاب',profile:'ملف الطالب الشامل',portfolio:'ملفات الإنجاز',learning:'تفضيلات التعلم',papers:'أعمال الطلاب',commands:'مركز الأوامر',analytics:'المستوى والتقدم'};
 function show(id){$$('.teacher-view').forEach(v=>v.classList.toggle('active',v.id==='t-'+id));$$('[data-tview]').forEach(b=>b.classList.toggle('active',b.dataset.tview===id));$('#teacherPageTitle').textContent=titles[id];if(id==='papers')renderPapers();if(id==='portfolio')renderPortfolio();if(id==='learning')renderLearningProfiles();if(id==='analytics'){renderAnalytics();renderStudentProgress();}window.scrollTo({top:0,behavior:'smooth'})}
 $$('[data-tview]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.tview)));$$('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go)));$$('[data-open-profile]').forEach(b=>b.addEventListener('click',()=>openStudentProfile(b.dataset.openProfile)));
 
@@ -263,5 +263,6 @@ $('#createStudentForm')?.addEventListener('submit',async e=>{
   renderLessons();
   try{await syncTeacherData();}catch{alert('تعذر الاتصال بقاعدة البيانات. أعد تحميل الصفحة.');}
   renderPortfolio();renderLearningProfiles();renderAnalytics();renderStudentProgress();
+window.syncTeacherData=syncTeacherData;
 })();
 })();
