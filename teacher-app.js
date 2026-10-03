@@ -1,13 +1,13 @@
 (()=>{'use strict';
 const D=window.TAMAKKUN_DATA;
-const LS={progress:'tamakkun_progress_v1',submissions:'tamakkun_submissions_v1'};
+const LS={progress:'tamakkun_progress_v1',submissions:'tamakkun_submissions_v1',portfolio:'tamakkun_portfolio_v1',learning:'tamakkun_learning_preferences_v1'};
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const load=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(f))}catch{return f}};
 const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 let selected=null, originalImage=null, drawing=false, tool='pen';
-const titles={dashboard:'لوحة المعلم',lessons:'الدروس والأكواد',students:'الطلاب',papers:'أعمال الطلاب',analytics:'الإتقان والتحليل'};
-function show(id){$$('.teacher-view').forEach(v=>v.classList.toggle('active',v.id==='t-'+id));$$('[data-tview]').forEach(b=>b.classList.toggle('active',b.dataset.tview===id));$('#teacherPageTitle').textContent=titles[id];if(id==='papers')renderPapers();if(id==='analytics')renderAnalytics();window.scrollTo({top:0,behavior:'smooth'})}
+const titles={dashboard:'لوحة المعلم',lessons:'الدروس والأكواد',students:'الطلاب',portfolio:'ملفات الإنجاز',learning:'تفضيلات التعلم',papers:'أعمال الطلاب',analytics:'المستوى والتقدم'};
+function show(id){$$('.teacher-view').forEach(v=>v.classList.toggle('active',v.id==='t-'+id));$$('[data-tview]').forEach(b=>b.classList.toggle('active',b.dataset.tview===id));$('#teacherPageTitle').textContent=titles[id];if(id==='papers')renderPapers();if(id==='portfolio')renderPortfolio();if(id==='learning')renderLearningProfiles();if(id==='analytics'){renderAnalytics();renderStudentProgress();}window.scrollTo({top:0,behavior:'smooth'})}
 $$('[data-tview]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.tview)));$$('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go)));
 
 function renderLessons(){
@@ -50,5 +50,37 @@ function renderAnalytics(){
   if(!vals.length){host.innerHTML='<div class="teacher-card wide-card">لا توجد نتائج حتى الآن. أكمل قياس إتقان من مساحة الطالب التجريبية.</div>';return;}
   host.innerHTML=vals.map(r=>`<article class="analytics-card"><div><span class="eyebrow">${esc(r.code)}</span><h3>${esc(r.title)}</h3></div><strong>${Number.isFinite(r.score)?r.score+'%':'قيد التعلم'}</strong>${r.levels?'<div class="analytics-levels"><span>معرفة <b>'+r.levels.knowledge.score+'%</b></span><span>تطبيق <b>'+r.levels.application.score+'%</b></span><span>استدلال <b>'+r.levels.reasoning.score+'%</b></span></div>':''}<p>${r.status==='needs_support'?'يحتاج معالجة موجهة':'متقن أو قيد التعلم'}</p></article>`).join('');
 }
-renderLessons();updateKpis();renderAnalytics();
+
+function renderPortfolio(){
+  const arr=load(LS.portfolio,[]),host=$('#teacherPortfolio');if(!host)return;
+  $('#portfolioCount').textContent=arr.length+' أعمال';
+  if(!arr.length){host.innerHTML='<div class="empty-correction">لا توجد أعمال في ملف الإنجاز حتى الآن.</div>';return;}
+  host.innerHTML=arr.map(x=>'<article class="teacher-portfolio-item"><img src="'+x.image+'" alt=""><div><span>'+esc(x.category)+'</span><h4>'+esc(x.title)+'</h4><p>'+esc(x.reflection||'لم يكتب الطالب تأملًا بعد.')+'</p><small>'+new Date(x.createdAt).toLocaleDateString('ar-SA')+'</small></div></article>').join('');
+}
+function renderLearningProfiles(){
+  const data=load(LS.learning,{}),host=$('#teacherLearningProfiles');if(!host)return;
+  if(!data.primary){host.innerHTML='<div class="teacher-card wide-card">لم يكمل الطالب استبانة تفضيلات التعلم بعد.</div>';return;}
+  const labels={visual:'يميل حاليًا إلى العرض البصري',verbal:'يميل حاليًا إلى الشرح اللفظي المنظم',active:'يميل حاليًا إلى التعلم بالممارسة'};
+  const suggestions={visual:'استخدم خرائط مفاهيم ومقارنات وتمثيلات بصرية، مع إبقاء أنشطة تطبيقية متنوعة.',verbal:'استخدم شرحًا متسلسلًا وتلخيصًا لغويًا وأمثلة واضحة، مع تنويع النشاط.',active:'استخدم بناء الجملة والسحب والترتيب والتجربة والتغذية الراجعة، مع دعم بصري ولفظي.'};
+  host.innerHTML='<article class="learning-profile-card"><div><span class="eyebrow">الطالب التجريبي</span><h3>'+labels[data.primary]+'</h3><p>'+suggestions[data.primary]+'</p></div><div class="teacher-preference-bars">'+Object.entries(data.scores||{}).map(([k,v])=>'<span>'+({visual:'بصري',verbal:'لفظي',active:'عملي'}[k])+' <b>'+v+'</b></span>').join('')+'</div><small>هذه تفضيلات حالية وليست تصنيفًا ثابتًا للطالب.</small></article>';
+}
+function buildProgress(){
+  const vals=Object.values(load(LS.progress,{})),scored=vals.filter(x=>Number.isFinite(x.score));
+  if(!scored.length)return null;
+  const avg=Math.round(scored.reduce((a,b)=>a+b.score,0)/scored.length), mastered=scored.filter(x=>x.status==='mastered').length;
+  const keys=['knowledge','application','reasoning'],labels={knowledge:'المعرفة',application:'التطبيق',reasoning:'الاستدلال'},agg={knowledge:[],application:[],reasoning:[]};
+  scored.forEach(r=>r.levels&&keys.forEach(k=>agg[k].push(r.levels[k].score)));
+  const a={};keys.forEach(k=>a[k]=agg[k].length?Math.round(agg[k].reduce((x,y)=>x+y,0)/agg[k].length):0);
+  const strongest=[...keys].sort((x,y)=>a[y]-a[x])[0],weakest=[...keys].sort((x,y)=>a[x]-a[y])[0];
+  const level=avg>=90?'متقدم':avg>=80?'متقن':avg>=65?'نامٍ':'يحتاج دعمًا';
+  return {avg,mastered,total:scored.length,a,strongest,weakest,labels,level};
+}
+function renderStudentProgress(){
+  const host=$('#studentProgressTable');if(!host)return;const p=buildProgress();
+  if(!p){host.innerHTML='<div class="teacher-card wide-card">لا توجد نتائج كافية لتحديد مستوى الطالب بعد.</div>';return;}
+  const support=p.avg<65?'علاجي مكثف':p.a[p.weakest]<80?'علاج موجه في '+p.labels[p.weakest]:'إثراء واستمرار';
+  host.innerHTML='<article class="student-progress-card"><div class="student-progress-main"><div><span class="eyebrow">S3A001 • الطالب التجريبي</span><h3>'+p.level+'</h3><p>أتقن '+p.mastered+' من '+p.total+' دروس مقاسة.</p></div><strong>'+p.avg+'%</strong></div><div class="student-progress-metrics"><div><span>معرفة</span><b>'+p.a.knowledge+'%</b></div><div><span>تطبيق</span><b>'+p.a.application+'%</b></div><div><span>استدلال</span><b>'+p.a.reasoning+'%</b></div><div><span>نقطة القوة</span><b>'+p.labels[p.strongest]+'</b></div><div><span>أولوية التحسين</span><b>'+p.labels[p.weakest]+'</b></div><div><span>المسار المقترح</span><b>'+support+'</b></div></div></article>';
+}
+
+renderLessons();updateKpis();renderPortfolio();renderLearningProfiles();renderAnalytics();renderStudentProgress();
 })();
