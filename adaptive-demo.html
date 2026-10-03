@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#173f35">
+<title>نموذج التعلم التكيفي | مِنَصَّةُ تَمَكُّن</title>
+<link rel="stylesheet" href="adaptive-demo.css">
+</head>
+<body>
+<div class="demo-shell">
+  <aside class="demo-side">
+    <div class="brand"><div class="brand-mark">ض</div><div><strong>مِنَصَّةُ تَمَكُّن</strong><small>التعلم التكيفي</small></div></div>
+    <div class="student-mini"><div class="avatar">ط</div><div><b>الطالب</b><span>ثالث متوسط</span></div></div>
+    <nav class="step-nav" id="stepNav">
+      <button class="active" data-step="diagnostic"><span>1</span> تشخيص سريع</button>
+      <button class="locked" data-step="path"><span>2</span> مساري المناسب</button>
+      <button class="locked" data-step="practice"><span>3</span> تعلم وتطبيق</button>
+      <button class="locked" data-step="mastery"><span>4</span> تحقق من الفهم</button>
+      <button class="locked" data-step="next"><span>5</span> خطوتي التالية</button>
+    </nav>
+    <div class="help-box"><b>لا تتعطل عند الخطأ</b><p>اطلب تلميحًا أو مثالًا أبسط في أي وقت.</p><button id="helpBtn">أرني مثالًا أسهل</button></div>
+  </aside>
+
+  <main class="demo-main">
+    <header class="demo-top">
+      <div><span class="eyebrow">الوظيفة النحوية • الحال</span><h1>رحلة تعلم تتكيف مع فهمك</h1><p>المنصة لا تعيد الدرس كاملًا؛ بل تحدد الجزئية التي تحتاجها وتغير طريقة العرض بناءً على أدائك.</p></div>
+      <div class="progress-card"><div class="progress-ring" id="progressRing"><span id="progressValue">10%</span></div><small>تقدم الرحلة</small></div>
+    </header>
+
+    <section class="learning-banner">
+      <div><span>هدف اليوم</span><strong>أن أحدد الحال وصاحب الحال وأوظفهما في سياق جديد.</strong></div>
+      <div class="status" id="adaptiveStatus">نبدأ بتشخيص قصير</div>
+    </section>
+
+    <section class="step-panel active" id="step-diagnostic">
+      <div class="section-head"><div><span class="eyebrow">قبل الشرح</span><h2>ماذا أعرف الآن؟</h2></div><span class="time-chip">3 أسئلة • أقل من دقيقتين</span></div>
+      <p class="lead">هذه ليست درجة نهائية؛ هدفها اختيار نقطة البداية المناسبة لك.</p>
+      <div id="diagnosticQuestions" class="question-stack"></div>
+      <button class="primary" id="finishDiagnostic">حدد مساري</button>
+      <p id="diagnosticMessage" class="message"></p>
+    </section>
+
+    <section class="step-panel" id="step-path"><div id="pathResult"></div></section>
+    <section class="step-panel" id="step-practice"><div id="practiceContent"></div></section>
+
+    <section class="step-panel" id="step-mastery">
+      <div class="section-head"><div><span class="eyebrow">تحقق من الفهم</span><h2>هل أصبحت جاهزًا؟</h2></div><span class="time-chip">سؤال استدلال</span></div>
+      <div class="mastery-card">
+        <p>اختر الإجابة الأدق:</p>
+        <h3>في الجملة: «عادَ المسافرُ مسرورًا»، لماذا تعد «مسرورًا» حالًا؟</h3>
+        <div class="choice-grid" id="masteryChoices">
+          <button data-correct="0">لأنها تدل على زمن العودة.</button>
+          <button data-correct="1">لأنها تبين هيئة المسافر وقت العودة.</button>
+          <button data-correct="0">لأنها اسم معرفة مرفوع.</button>
+          <button data-correct="0">لأنها فاعل للفعل عاد.</button>
+        </div>
+        <div id="masteryFeedback" class="feedback"></div>
+      </div>
+    </section>
+
+    <section class="step-panel" id="step-next"><div id="nextContent"></div></section>
+  </main>
+</div>
+
+<div class="support-modal" id="supportModal" aria-hidden="true">
+  <div class="support-dialog">
+    <button class="close" id="closeSupport">×</button>
+    <span class="eyebrow">مثال أبسط</span>
+    <h3>دخلَ خالدٌ مسرعًا.</h3>
+    <p><b>اسأل:</b> كيف دخل خالد؟</p>
+    <p>الإجابة: <strong>مسرعًا</strong>. إذن «مسرعًا» تصف هيئة خالد وقت الدخول، فهي حال.</p>
+    <button class="primary" id="supportDone">فهمت المثال</button>
+  </div>
+</div>
+
+<script src="adaptive-demo.js"></script>
+</body>
+</html>
