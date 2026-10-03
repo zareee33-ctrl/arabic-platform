@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#173f35">
+<title>دخول الطالب | مِنَصَّةُ تَمَكُّن</title>
+<link rel="stylesheet" href="portal.css">
+</head>
+<body class="auth-body">
+<main class="auth-layout">
+  <section class="auth-brand">
+    <a href="index.html" class="back-home">← الرئيسية</a>
+    <div class="brand-lockup">
+      <div class="brand-mark">ض</div>
+      <div><span class="eyebrow">لغتي الخالدة</span><h1>مِنَصَّةُ تَمَكُّن</h1></div>
+    </div>
+    <h2>بوابة الطالب</h2>
+    <p>ادخل بحسابك الشخصي، ثم استخدم كود الدرس الذي يرسله المعلم لبدء رحلة التعلم.</p>
+    <ul>
+      <li>حساب مستقل لكل طالب</li>
+      <li>تقدم ونتائج محفوظة</li>
+      <li>رفع الأعمال الورقية ومشاهدة تصحيح المعلم</li>
+    </ul>
+  </section>
+
+  <section class="auth-panel">
+    <form class="auth-card" id="studentLoginForm">
+      <div class="auth-title"><span>طالب</span><h2>تسجيل الدخول</h2><p>أدخل رمز الطالب والرقم السري.</p></div>
+      <label><span>رمز الطالب</span><input id="studentCode" autocomplete="username" placeholder="مثال: S3A001" required></label>
+      <label><span>الرقم السري</span><input id="studentPassword" type="password" autocomplete="current-password" inputmode="numeric" placeholder="••••••" required></label>
+      <button class="auth-submit" type="submit">دخول الطالب</button>
+      <div class="auth-message" id="studentMessage" aria-live="polite"></div>
+      <a class="preview-link" href="student-app.html">معاينة مساحة الطالب الحالية</a>
+    </form>
+  </section>
+</main>
+<script>
+document.getElementById('studentLoginForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  const box=document.getElementById('studentMessage');
+  box.textContent='واجهة الدخول جاهزة. ربط الحسابات الحقيقية وقاعدة البيانات هو الخطوة التالية.';
+  box.className='auth-message show';
+});
+</script>
+</body>
+</html>
