@@ -15,8 +15,10 @@
       <button class="active" data-tview="dashboard">الرئيسية</button>
       <button data-tview="lessons">الدروس والأكواد</button>
       <button data-tview="students">الطلاب</button>
+      <button data-tview="portfolio">ملفات الإنجاز</button>
+      <button data-tview="learning">تفضيلات التعلم</button>
       <button data-tview="papers">أعمال الطلاب</button>
-      <button data-tview="analytics">الإتقان والتحليل</button>
+      <button data-tview="analytics">المستوى والتقدم</button>
     </nav>
     <a href="index.html" class="side-exit">العودة لبوابات الدخول</a>
   </aside>
@@ -35,7 +37,7 @@
       <section class="teacher-grid">
         <article class="teacher-card"><div class="card-head"><div><span class="eyebrow">الوصول السريع</span><h3>الدروس والأكواد</h3></div><b>01</b></div><p>كل درس يملك كودًا واحدًا يفتح رحلة الطالب مباشرة.</p><button data-go="lessons">فتح إدارة الدروس</button></article>
         <article class="teacher-card"><div class="card-head"><div><span class="eyebrow">شواهد التعلم</span><h3>أعمال الطلاب</h3></div><b>02</b></div><p>افتح صورة الطالب، صحح فوقها، ثم أرسلها له مع ملاحظتك.</p><button data-go="papers">فتح الأعمال</button></article>
-        <article class="teacher-card"><div class="card-head"><div><span class="eyebrow">التشخيص</span><h3>الإتقان والتحليل</h3></div><b>03</b></div><p>اعرف مستوى المعرفة والتطبيق والاستدلال بدل النسبة العامة فقط.</p><button data-go="analytics">فتح التحليل</button></article>
+        <article class="teacher-card"><div class="card-head"><div><span class="eyebrow">ملف الطالب</span><h3>المستوى والتقدم</h3></div><b>03</b></div><p>اعرف مستوى الطالب الحالي، تقدمه، نقطة قوته، وأولوية التحسين.</p><button data-go="analytics">فتح المتابعة</button></article>
       </section>
     </section>
 
@@ -47,6 +49,19 @@
     <section class="teacher-view" id="t-students">
       <div class="teacher-section-head"><div><span class="eyebrow">الحسابات</span><h2>الطلاب</h2><p>هذه الصفحة مهيأة لاستيراد قائمة الطلاب وإنشاء رمز ورقم سري مستقل لكل طالب.</p></div></div>
       <div class="teacher-card wide-card"><h3>الخطوة التالية لحسابات الطلاب</h3><p>سنربط هذه الصفحة بقاعدة البيانات، ثم تستورد الأسماء دفعة واحدة. لن نضع كلمات المرور داخل ملفات الموقع.</p><div class="student-demo-row"><b>S3A001</b><span>الطالب التجريبي</span><span>ثالث متوسط / أ</span><em>حساب تجريبي</em></div></div>
+    </section>
+
+    <section class="teacher-view" id="t-portfolio">
+      <div class="teacher-section-head"><div><span class="eyebrow">توثيق نمو الطالب</span><h2>ملفات الإنجاز</h2><p>كل طالب يملك ملفًا يجمع أعماله المختارة وتأملاته خلال الفصل.</p></div></div>
+      <div class="teacher-card">
+        <div class="portfolio-student-head"><div><span class="eyebrow">الطالب التجريبي</span><h3>ملف الإنجاز</h3></div><span id="portfolioCount" class="status-chip">0 أعمال</span></div>
+        <div id="teacherPortfolio" class="teacher-portfolio-grid"></div>
+      </div>
+    </section>
+
+    <section class="teacher-view" id="t-learning">
+      <div class="teacher-section-head"><div><span class="eyebrow">تنويع التعليم</span><h2>تفضيلات التعلم</h2><p>تظهر تفضيلات الطالب الحالية لتساعدك على تنويع الشرح والأنشطة، ولا تُعامل كنمط ثابت أو حكم على القدرة.</p></div></div>
+      <div id="teacherLearningProfiles" class="learning-profile-grid"></div>
     </section>
 
     <section class="teacher-view" id="t-papers">
@@ -69,7 +84,8 @@
     </section>
 
     <section class="teacher-view" id="t-analytics">
-      <div class="teacher-section-head"><div><span class="eyebrow">تشخيص لا درجات فقط</span><h2>الإتقان والتحليل</h2><p>يعرض المستوى الذي يحتاج إلى تدخل: معرفة، تطبيق، أو استدلال.</p></div></div>
+      <div class="teacher-section-head"><div><span class="eyebrow">متابعة شاملة لكل طالب</span><h2>المستوى والتقدم في المادة</h2><p>المستوى مبني على نتائج الدروس الفعلية، مع تفصيل المعرفة والتطبيق والاستدلال، وعدد الدروس المتقنة، وأولوية التدخل.</p></div></div>
+      <div id="studentProgressTable" class="student-progress-table"></div>
       <div id="teacherAnalytics" class="analytics-grid"></div>
     </section>
   </main>
