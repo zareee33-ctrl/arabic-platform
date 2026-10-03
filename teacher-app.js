@@ -1,5 +1,8 @@
 (()=>{'use strict';
 const D=window.TAMAKKUN_DATA;
+const session=window.TamakkunAPI?.getSession();
+if(!session||!['teacher','admin'].includes(session.user?.role)){location.href='teacher.html';return;}
+let remoteStudents=[],currentRemoteProfile=null;
 const LS={progress:'tamakkun_progress_v1',submissions:'tamakkun_submissions_v1',portfolio:'tamakkun_portfolio_v1',learning:'tamakkun_learning_preferences_v1'};
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const load=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(f))}catch{return f}};
@@ -10,13 +13,77 @@ const titles={dashboard:'لوحة المعلم',lessons:'الدروس والأك
 function show(id){$$('.teacher-view').forEach(v=>v.classList.toggle('active',v.id==='t-'+id));$$('[data-tview]').forEach(b=>b.classList.toggle('active',b.dataset.tview===id));$('#teacherPageTitle').textContent=titles[id];if(id==='papers')renderPapers();if(id==='portfolio')renderPortfolio();if(id==='learning')renderLearningProfiles();if(id==='analytics'){renderAnalytics();renderStudentProgress();}window.scrollTo({top:0,behavior:'smooth'})}
 $('[data-tview]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.tview)));$('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go)));$('[data-open-profile]').forEach(b=>b.addEventListener('click',()=>openStudentProfile(b.dataset.openProfile)));
 
+function mapRemoteProfileToLocal(snap){
+  if(!snap)return;
+  const progress={};
+  (snap.progress||[]).forEach(row=>{
+    const code=row.lessons?.code||''; if(!code)return;
+    progress[code]={code,title:row.lessons?.title||code,score:row.score,
+      levels:row.knowledge_percent===null?null:{
+        knowledge:{score:row.knowledge_percent,label:'معرفة'},
+        application:{score:row.application_percent,label:'تطبيق'},
+        reasoning:{score:row.reasoning_percent,label:'استدلال'}
+      },
+      status:row.status,startedAt:row.started_at,lastAttemptAt:row.last_attempt_at,
+      kwl:{k:row.kwl_k||'',w:row.kwl_w||'',l:row.kwl_l||''}
+    };
+  });
+  save(LS.progress,progress);
+  const learning=snap.learning;
+  save(LS.learning,learning?{
+    answers:learning.responses||{},
+    scores:{visual:learning.visual_score,verbal:learning.verbal_score,active:learning.active_score},
+    primary:learning.primary_preference,updatedAt:learning.updated_at
+  }:{});
+  save(LS.portfolio,(snap.portfolio||[]).map(x=>({
+    id:x.id,studentId:snap.student?.id,title:x.title,category:x.category,reflection:x.reflection||'',
+    image:x.image_url||'',createdAt:x.created_at
+  })));
+  save(LS.submissions,(snap.papers||[]).map(x=>({
+    id:x.id,studentId:snap.student?.id,studentName:snap.student?.full_name||'',
+    lessonCode:x.lessons?.code||'',lessonTitle:x.lessons?.title||'',type:x.work_type,
+    image:x.original_url||'',correctedImage:x.corrected_url||null,status:x.status,
+    teacherNote:x.teacher_note||'',createdAt:x.created_at,reviewedAt:x.reviewed_at
+  })));
+}
+function renderStudentList(){
+  const host=$('#teacherStudentList'); if(!host)return;
+  $('#studentCount').textContent=remoteStudents.length+' طالب';
+  if(!remoteStudents.length){host.innerHTML='<div class="empty-correction">لا يوجد طلاب بعد.</div>';return;}
+  host.innerHTML=remoteStudents.map(x=>{
+    const s=x.student,sc=(x.progress||[]).filter(r=>Number.isFinite(r.score));
+    const avg=sc.length?Math.round(sc.reduce((a,b)=>a+b.score,0)/sc.length):null;
+    return '<button class="student-profile-row" data-open-profile="'+s.id+'"><b>'+esc(s.login_code)+'</b><span>'+esc(s.full_name)+'</span><span>'+esc((s.grade||'')+(s.class_name?' / '+s.class_name:''))+'</span><em>'+(avg===null?'فتح الملف ←':avg+'% • فتح الملف ←')+'</em></button>';
+  }).join('');
+  $('[data-open-profile]').forEach(b=>b.addEventListener('click',()=>openStudentProfile(b.dataset.openProfile)));
+}
+async function syncTeacherData(){
+  const data=await TamakkunAPI.teacherSnapshot();
+  remoteStudents=data.students||[];
+  const flatPapers=[];
+  for(const x of remoteStudents){
+    for(const p of x.papers||[]) flatPapers.push({
+      id:p.id,studentId:x.student.id,studentName:x.student.full_name,
+      lessonCode:p.lessons?.code||'',lessonTitle:p.lessons?.title||'',type:p.work_type,
+      image:p.original_url||'',correctedImage:p.corrected_url||null,status:p.status,
+      teacherNote:p.teacher_note||'',createdAt:p.created_at,reviewedAt:p.reviewed_at
+    });
+  }
+  save(LS.submissions,flatPapers);
+  renderStudentList();
+  updateKpis();
+}
 function renderLessons(){
   $('#lessonAdminList').innerHTML=Object.values(D.lessons).map(l=>`<article class="lesson-admin-card"><div><span class="eyebrow">${esc(l.type)} • ${esc(l.unit)}</span><h3>${esc(l.title)}</h3><p>${esc(l.goal)}</p></div><div class="lesson-code-box"><small>كود الدرس</small><strong>${esc(l.code)}</strong><button data-copy="${esc(l.code)}">نسخ الكود</button></div></article>`).join('');
   $$('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(b.dataset.copy);b.textContent='تم النسخ ✓'}catch{b.textContent=b.dataset.copy}}));
 }
 function updateKpis(){
-  const subs=load(LS.submissions,[]), vals=Object.values(load(LS.progress,{})), scored=vals.filter(x=>Number.isFinite(x.score));
-  $('#kpiPending').textContent=subs.filter(x=>x.status==='pending').length;$('#kpiSupport').textContent=vals.filter(x=>x.status==='needs_support').length;$('#kpiAverage').textContent=scored.length?Math.round(scored.reduce((a,b)=>a+b.score,0)/scored.length)+'%':'—';
+  const subs=load(LS.submissions,[]);
+  const allProgress=remoteStudents.flatMap(x=>x.progress||[]);
+  const scored=allProgress.filter(x=>Number.isFinite(x.score));
+  $('#kpiPending').textContent=subs.filter(x=>x.status==='pending').length;
+  $('#kpiSupport').textContent=remoteStudents.filter(x=>(x.progress||[]).some(r=>r.status==='needs_support')).length;
+  $('#kpiAverage').textContent=scored.length?Math.round(scored.reduce((a,b)=>a+b.score,0)/scored.length)+'%':'—';
 }
 function renderPapers(){
   const arr=load(LS.submissions,[]), host=$('#teacherSubmissionList');
@@ -40,8 +107,16 @@ function move(e){if(!drawing||tool!=='pen')return;const p=pos(e,canvas);ctx.line
 function end(){drawing=false}
 canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);window.addEventListener('mouseup',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end);
 $$('[data-tool]').forEach(b=>b.addEventListener('click',()=>{tool=b.dataset.tool;if(tool==='clear')loadCanvas(originalImage);if(tool==='check'||tool==='x'){ctx.font='bold '+Math.max(48,canvas.width/10)+'px Tahoma';ctx.fillStyle=tool==='check'?'#138a4b':'#c62828';ctx.fillText(tool==='check'?'✓':'✕',canvas.width*.08,canvas.height*.14);tool='pen'}}));
-function saveCorrection(status){
-  if(!selected)return;const arr=load(LS.submissions,[]),i=arr.findIndex(x=>x.id===selected.id);if(i<0)return;arr[i]={...arr[i],status,teacherNote:$('#teacherNote').value.trim(),correctedImage:canvas.toDataURL('image/jpeg',.88),reviewedAt:new Date().toISOString()};save(LS.submissions,arr);selected=arr[i];renderPapers();updateKpis();$('#corrStatus').textContent=status==='approved'?'معتمد':'يحتاج تعديل';
+async function saveCorrection(status){
+  if(!selected)return;
+  const correctedImage=canvas.toDataURL('image/jpeg',.88);
+  const note=$('#teacherNote').value.trim();
+  $('#sendRevision').disabled=true;$('#approveSubmission').disabled=true;
+  try{
+    await TamakkunAPI.reviewSubmission({submission_id:selected.id,status,teacher_note:note,corrected_image_data_url:correctedImage});
+    await syncTeacherData();renderPapers();$('#corrStatus').textContent=status==='approved'?'معتمد':'يحتاج تعديل';
+  }catch{alert('تعذر حفظ التصحيح. حاول مرة أخرى.')}
+  finally{$('#sendRevision').disabled=false;$('#approveSubmission').disabled=false}
 }
 $('#sendRevision').addEventListener('click',()=>saveCorrection('needs_revision'));$('#approveSubmission').addEventListener('click',()=>saveCorrection('approved'));
 
@@ -86,7 +161,8 @@ function renderStudentProgress(){
 let currentProfileStudent='S3A001',currentProfileTab='overview';
 function getStudentProfileData(){
   const p=buildProgress(),progressRows=Object.values(load(LS.progress,{})),portfolio=load(LS.portfolio,[]),papers=load(LS.submissions,[]),learning=load(LS.learning,{});
-  return {student:{id:'S3A001',name:'الطالب التجريبي',className:'ثالث متوسط / أ'},p,progressRows,portfolio,papers,learning};
+  const s=currentRemoteProfile?.student||{};
+  return {student:{id:s.login_code||s.id||'',name:s.full_name||'الطالب',className:(s.grade||'')+(s.class_name?' / '+s.class_name:'')},p,progressRows,portfolio,papers,learning};
 }
 function openStudentProfile(id){
   currentProfileStudent=id||'S3A001';currentProfileTab='overview';
@@ -144,5 +220,20 @@ function renderStudentProfileTab(tab,d){
   }
 }
 
-renderLessons();updateKpis();renderPortfolio();renderLearningProfiles();renderAnalytics();renderStudentProgress();
+$('#createStudentForm')?.addEventListener('submit',async e=>{
+  e.preventDefault();const btn=e.currentTarget.querySelector('button[type="submit"]'),msg=$('#createStudentMessage');btn.disabled=true;msg.textContent='جارٍ إنشاء الحساب...';
+  try{
+    await TamakkunAPI.createStudent({
+      code:$('#newStudentCode').value,full_name:$('#newStudentName').value,
+      password:$('#newStudentPassword').value,grade:'ثالث متوسط',class_name:$('#newStudentClass').value
+    });
+    e.currentTarget.reset();msg.textContent='تم إنشاء حساب الطالب ✓';await syncTeacherData();
+  }catch(err){msg.textContent='تعذر إنشاء الحساب. تأكد من أن رمز الدخول غير مستخدم.'}
+  finally{btn.disabled=false}
+});
+(async()=>{
+  renderLessons();
+  try{await syncTeacherData();}catch{alert('تعذر الاتصال بقاعدة البيانات. أعد تحميل الصفحة.');}
+  renderPortfolio();renderLearningProfiles();renderAnalytics();renderStudentProgress();
+})();
 })();
