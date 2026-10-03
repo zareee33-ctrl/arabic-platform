@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مساحة الطالب | مِنَصَّةُ تَمَكُّن</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><div class="brand-mark">ض</div><div><h1>مِنَصَّةُ تَمَكُّن</h1><p>لغتي الخالدة • ثالث متوسط</p></div></div>
+    <div class="student-card"><div class="avatar">ط</div><div><strong>الطالب التجريبي</strong><small>رحلة تعلم تجريبية</small></div><span class="score">74%</span></div>
+    <nav>
+      <button class="nav-item active" data-view="home">الرئيسية</button>
+      <button class="nav-item" data-view="units">الوحدات والدروس</button>
+      <button class="nav-item" data-view="progress">تقدمي</button>
+      <button class="nav-item" data-view="review">مراجعة أخطائي</button>
+    </nav>
+    <div class="side-note"><strong>رحلة الإتقان</strong><p>لا ينتقل الطالب قبل أن يفهم النقطة ويطبق عليها.</p></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><button class="menu-btn" id="menuBtn">☰</button><div><span class="eyebrow">تعلّم • طبّق • أتقن</span><h2 id="pageTitle">مرحبًا بك في رحلة لغتي</h2></div><div class="top-actions"><div class="streak">🔥 3 أيام</div><a class="ghost" href="index.html">خروج</a></div></header>
+    <section id="home" class="view active-view">
+      <div class="hero"><div><span class="pill">الدرس الحالي</span><h3>اسم الفاعل</h3><p>تعلم المفهوم والصياغة والتطبيق في خطوات قصيرة، ثم اختبر إتقانك.</p><div class="hero-actions"><button class="primary" onclick="openLesson()">أكمل الدرس</button><button class="secondary" onclick="switchView('units')">استعرض الدروس</button></div></div><div class="progress-ring"><div class="ring"><span>62%</span></div><small>تقدم الدرس</small></div></div>
+      <div class="stats-grid"><article><span>الدروس المتقنة</span><strong>4</strong><small>من 12 درسًا</small></article><article><span>التدريبات المكتملة</span><strong>18</strong><small>هذا الأسبوع</small></article><article><span>متوسط الإتقان</span><strong>82%</strong><small>جيد جدًا</small></article><article><span>نقاط تحتاج مراجعة</span><strong>3</strong><small>سنركز عليها</small></article></div>
+      <div class="section-head"><div><span class="eyebrow">كود الدرس</span><h3>ابدأ درسًا جديدًا</h3></div></div>
+      <div class="card"><div class="card-title"><span>⌁</span><div><small>أرسل المعلم الكود؟</small><h3>أدخل كود الدرس</h3></div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><input placeholder="مثال: HAL-01" style="flex:1;min-width:200px;border:1px solid #e4ebe7;border-radius:12px;padding:12px"><button class="primary" onclick="document.getElementById('toast').textContent='سيُربط الكود بالدروس في المرحلة التالية';document.getElementById('toast').classList.add('show');setTimeout(()=>document.getElementById('toast').classList.remove('show'),2500)">فتح الدرس</button></div></div>
+      <div class="section-head"><div><span class="eyebrow">مسارك</span><h3>ماذا تفعل الآن؟</h3></div></div>
+      <div class="path-grid"><button class="path-card done"><span>1</span><div><strong>اعرف الهدف</strong><small>اكتملت</small></div></button><button class="path-card done"><span>2</span><div><strong>افهم الفكرة</strong><small>اكتملت</small></div></button><button class="path-card current" onclick="openLesson()"><span>3</span><div><strong>طبّق الآن</strong><small>أكمل من هنا</small></div></button><button class="path-card locked"><span>4</span><div><strong>اختبار الإتقان</strong><small>يفتح بعد التدريب</small></div></button></div>
+    </section>
+    <section id="units" class="view">
+      <div class="section-head"><div><span class="eyebrow">الكتاب الدراسي</span><h3>الوحدات والدروس</h3></div><div class="filter-chip">الفصل الدراسي الأول</div></div>
+      <div class="unit-card"><div class="unit-heading"><div><span class="unit-no">01</span><div><small>الوحدة الأولى</small><h3>حقوق وواجبات</h3></div></div><span class="unit-progress">42% مكتمل</span></div><div class="lesson-list">
+        <button><span class="type">استماع</span><strong>فئات تكلؤها عين الشريعة</strong><em>ابدأ</em></button>
+        <button><span class="type">فهم قرائي</span><strong>وقضى ربك</strong><em>ابدأ</em></button>
+        <button><span class="type">استراتيجية قراءة</span><strong>حقوق الأشخاص ذوي الإعاقة</strong><em>ابدأ</em></button>
+        <button><span class="type">تحليل أدبي</span><strong>دَيْن الكريم</strong><em>ابدأ</em></button>
+        <button><span class="type">رسم إملائي</span><strong>الألف اللينة في الأفعال الثلاثية</strong><em>ابدأ</em></button>
+        <button class="featured" onclick="openLesson()"><span class="type">صنف لغوي</span><strong>اسم الفاعل</strong><em>أكمل ←</em></button>
+        <button><span class="type">أسلوب لغوي</span><strong>القسم</strong><em>ابدأ</em></button>
+        <button><span class="type">وظيفة نحوية</span><strong>الحال</strong><em>ابدأ</em></button>
+      </div></div>
+      <div class="unit-card muted"><div class="unit-heading"><div><span class="unit-no">02</span><div><small>الوحدة الثانية</small><h3>أعلام معاصرون</h3></div></div><span class="unit-progress">لم تبدأ</span></div><p class="unit-desc">تفتح الدروس تدريجيًا بحسب خطة المعلم.</p></div>
+    </section>
+    <section id="lesson" class="view">
+      <div class="lesson-top"><button class="back" onclick="switchView('units')">← العودة للدروس</button><div class="lesson-progress"><span style="width:62%"></span></div><small>62% من الدرس</small></div>
+      <div class="lesson-banner"><div><span class="pill">الصنف اللغوي</span><h2>اسم الفاعل</h2><p>درس مصغّر: كل نقطة لها شرح قصير ثم تطبيق مباشر.</p></div><div class="lesson-meta"><span>⏱ 12 دقيقة</span><span>🎯 4 أهداف</span><span>✍️ 8 تدريبات</span></div></div>
+      <div class="lesson-layout"><div class="lesson-content">
+        <article class="card goals"><div class="card-title"><span>01</span><div><small>قبل أن تبدأ</small><h3>ماذا ستتعلم؟</h3></div></div><div class="goal-list"><label><input type="checkbox" checked disabled> أن يتعرف الطالب مفهوم اسم الفاعل.</label><label><input type="checkbox" disabled> أن يصوغ اسم الفاعل من الفعل الثلاثي.</label><label><input type="checkbox" disabled> أن يصوغ اسم الفاعل من غير الثلاثي.</label><label><input type="checkbox" disabled> أن يستخرج اسم الفاعل ويوظفه في جملة.</label></div></article>
+        <article class="card micro-step"><div class="card-title"><span>02</span><div><small>النقطة الأولى</small><h3>ما اسم الفاعل؟</h3></div></div><div class="explain"><p><strong>اسم الفاعل</strong> اسم مشتق يدل على من قام بالفعل.</p><div class="examples"><span>كتب ← <b>كاتب</b></span><span>حفظ ← <b>حافظ</b></span><span>جلس ← <b>جالس</b></span></div></div><div class="quick-check"><span class="check-label">تأكد من فهمك</span><p>أي الكلمات الآتية اسم فاعل؟</p><div class="choices" data-correct="كاتب"><button>كتاب</button><button>كاتب</button><button>مكتوب</button><button>كتابة</button></div><div class="feedback"></div></div></article>
+        <article class="card micro-step"><div class="card-title"><span>03</span><div><small>النقطة الثانية</small><h3>صياغته من الفعل الثلاثي</h3></div></div><div class="rule-box"><span>القاعدة</span><strong>يُصاغ غالبًا على وزن «فاعل».</strong></div><div class="examples"><span>نصر ← <b>ناصر</b></span><span>شكر ← <b>شاكر</b></span><span>صدق ← <b>صادق</b></span></div><div class="quick-check"><span class="check-label">طبّق الآن</span><p>اسم الفاعل من الفعل «حفظ» هو:</p><div class="choices" data-correct="حافظ"><button>محفوظ</button><button>حافظ</button><button>حِفظ</button><button>حَفِظ</button></div><div class="feedback"></div></div></article>
+        <article class="card mastery"><div><span class="eyebrow">بعد إنهاء النقاط</span><h3>اختبار إتقان الدرس</h3><p>6 أسئلة قصيرة: معرفة + تطبيق + استدلال. درجة الإتقان 80%.</p></div><button class="primary" id="masteryBtn">ابدأ اختبار الإتقان</button></article>
+      </div><aside class="lesson-side"><div class="mini-card"><strong>رحلة الدرس</strong><ol><li class="done">الأهداف</li><li class="done">مفهوم اسم الفاعل</li><li class="current">الصياغة من الثلاثي</li><li>الصياغة من غير الثلاثي</li><li>التطبيق في السياق</li><li>اختبار الإتقان</li></ol></div><div class="mini-card smart"><span>💡</span><strong>معالجة ذكية</strong><p>إذا أخطأت في نقطة محددة فلن تعيد الدرس كله؛ ستعود للنقطة نفسها مع شرح أبسط وتدريب جديد.</p></div></aside></div>
+    </section>
+    <section id="progress" class="view"><div class="section-head"><div><span class="eyebrow">ملف الطالب</span><h3>تقدمي في المهارات</h3></div></div><div class="skills"><div><span>الفهم القرائي</span><div><i style="width:86%"></i></div><b>86%</b></div><div><span>الصنف اللغوي</span><div><i style="width:74%"></i></div><b>74%</b></div><div><span>الأسلوب اللغوي</span><div><i style="width:68%"></i></div><b>68%</b></div><div><span>الوظيفة النحوية</span><div><i style="width:79%"></i></div><b>79%</b></div></div></section>
+    <section id="review" class="view"><div class="section-head"><div><span class="eyebrow">مراجعة موجهة</span><h3>أخطائي التي تحتاج تدريبًا</h3></div></div><div class="review-grid"><article><span class="warning">تحتاج مراجعة</span><h4>اسم الفاعل من غير الثلاثي</h4><p>أخطأت في سؤالين من آخر محاولة.</p><button class="secondary" onclick="openLesson()">تدرب الآن</button></article><article><span class="ok">قريب من الإتقان</span><h4>أسلوب القسم</h4><p>أجب عن تدريب واحد إضافي لإكمال الإتقان.</p><button class="secondary">ابدأ التدريب</button></article></div></section>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
