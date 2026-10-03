@@ -19,5 +19,8 @@ jobs:
           node --check student-app.js
           node --check teacher-app.js
           node --check command-console.js
+          node --check book-course-data.js
+          node --check book-course.js
+          node --check book-teacher.js
       - name: Static integration contract
         run: node scripts/verify-static.mjs
