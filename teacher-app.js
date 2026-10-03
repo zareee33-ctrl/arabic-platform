@@ -11,7 +11,7 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&
 let selected=null, originalImage=null, drawing=false, tool='pen';
 const titles={dashboard:'لوحة المعلم',lessons:'الدروس والأكواد',students:'الطلاب',profile:'ملف الطالب الشامل',portfolio:'ملفات الإنجاز',learning:'تفضيلات التعلم',papers:'أعمال الطلاب',analytics:'المستوى والتقدم'};
 function show(id){$$('.teacher-view').forEach(v=>v.classList.toggle('active',v.id==='t-'+id));$$('[data-tview]').forEach(b=>b.classList.toggle('active',b.dataset.tview===id));$('#teacherPageTitle').textContent=titles[id];if(id==='papers')renderPapers();if(id==='portfolio')renderPortfolio();if(id==='learning')renderLearningProfiles();if(id==='analytics'){renderAnalytics();renderStudentProgress();}window.scrollTo({top:0,behavior:'smooth'})}
-$('[data-tview]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.tview)));$('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go)));$('[data-open-profile]').forEach(b=>b.addEventListener('click',()=>openStudentProfile(b.dataset.openProfile)));
+$$('[data-tview]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.tview)));$$('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go)));$$('[data-open-profile]').forEach(b=>b.addEventListener('click',()=>openStudentProfile(b.dataset.openProfile)));
 
 function mapRemoteProfileToLocal(snap){
   if(!snap)return;
@@ -55,7 +55,7 @@ function renderStudentList(){
     const avg=sc.length?Math.round(sc.reduce((a,b)=>a+b.score,0)/sc.length):null;
     return '<button class="student-profile-row" data-open-profile="'+s.id+'"><b>'+esc(s.login_code)+'</b><span>'+esc(s.full_name)+'</span><span>'+esc((s.grade||'')+(s.class_name?' / '+s.class_name:''))+'</span><em>'+(avg===null?'فتح الملف ←':avg+'% • فتح الملف ←')+'</em></button>';
   }).join('');
-  $('[data-open-profile]').forEach(b=>b.addEventListener('click',()=>openStudentProfile(b.dataset.openProfile)));
+  $$('[data-open-profile]').forEach(b=>b.addEventListener('click',()=>openStudentProfile(b.dataset.openProfile)));
 }
 async function syncTeacherData(){
   const data=await TamakkunAPI.teacherSnapshot();
@@ -177,7 +177,7 @@ function openStudentProfile(id){
     statusBox.innerHTML='<span>المستوى الحالي</span><strong>'+level+'</strong><small>'+(avg===null?'لا توجد بيانات كافية':avg+'% متوسط الإتقان')+'</small>';
   }
   show('profile');
-  $('[data-profile-tab]').forEach(b=>b.classList.toggle('active',b.dataset.profileTab==='overview'));
+  $$('[data-profile-tab]').forEach(b=>b.classList.toggle('active',b.dataset.profileTab==='overview'));
 }
 function renderStudentProfileOverview(d){
   const host=$('#studentProfileOverview');if(!host)return;
@@ -191,7 +191,7 @@ function renderStudentProfileOverview(d){
   '<article><span>تفضيل التعلم</span><strong>'+({visual:'بصري',verbal:'لفظي',active:'عملي'}[d.learning.primary]||'غير محدد')+'</strong><small>تفضيل حالي غير ثابت</small></article>'+
   '</div>';
 }
-$('[data-profile-tab]').forEach(b=>b.addEventListener('click',()=>{currentProfileTab=b.dataset.profileTab;$('[data-profile-tab]').forEach(x=>x.classList.toggle('active',x===b));renderStudentProfileTab(currentProfileTab,getStudentProfileData())}));
+$$('[data-profile-tab]').forEach(b=>b.addEventListener('click',()=>{currentProfileTab=b.dataset.profileTab;$$('[data-profile-tab]').forEach(x=>x.classList.toggle('active',x===b));renderStudentProfileTab(currentProfileTab,getStudentProfileData())}));
 function renderStudentProfileTab(tab,d){
   const host=$('#studentProfileContent');if(!host)return;
   if(tab==='overview'){
