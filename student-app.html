@@ -16,7 +16,9 @@
       <button class="nav-item active" data-view="home">الرئيسية</button>
       <button class="nav-item" data-view="journey">رحلة الدرس</button>
       <button class="nav-item" data-view="papers">أعمالي الورقية</button>
-      <button class="nav-item" data-view="results">نتائجي</button>
+      <button class="nav-item" data-view="portfolio">ملف إنجازي</button>
+      <button class="nav-item" data-view="learning">تفضيلات تعلمي</button>
+      <button class="nav-item" data-view="results">تقدمي ونتائجي</button>
     </nav>
     <div class="side-note"><strong>رحلة الإتقان</strong><p>اكتشف • افهم • طبّق • أتقن • عالج ما تحتاجه.</p></div>
   </aside>
@@ -87,8 +89,40 @@
       </div>
     </section>
 
+    <section id="portfolio" class="view">
+      <div class="section-head"><div><span class="eyebrow">ملفي الشخصي في المادة</span><h3>ملف إنجازي</h3></div><span class="filter-chip">أعمال مختارة على مدار الفصل</span></div>
+      <div class="portfolio-layout">
+        <form class="card portfolio-form" id="portfolioForm">
+          <div class="card-title"><span>★</span><div><small>أضف شاهدًا جديدًا</small><h3>إضافة عمل إلى ملف الإنجاز</h3></div></div>
+          <label>عنوان العمل<input id="portfolioTitle" placeholder="مثال: خريطة مفاهيم درس الحال" required></label>
+          <label>نوع الإنجاز<select id="portfolioCategory"><option>ورقة عمل</option><option>كتابة</option><option>خط</option><option>خريطة مفاهيم</option><option>مشروع</option><option>مهمة أدائية</option><option>إنجاز آخر</option></select></label>
+          <label>ماذا تعلمت من هذا العمل؟<textarea id="portfolioReflection" placeholder="اكتب جملة قصيرة تصف ما تعلمته أو ما تحسن لديك."></textarea></label>
+          <label class="upload-box">صورة العمل<input id="portfolioFile" type="file" accept="image/*" capture="environment" required><span>التقط صورة أو اختر صورة واضحة للعمل</span></label>
+          <div id="portfolioPreview" class="paper-preview"></div>
+          <button class="primary" type="submit">إضافة إلى ملف إنجازي</button>
+          <p class="inline-feedback" id="portfolioFeedback"></p>
+        </form>
+        <div class="card">
+          <div class="card-title"><span>▦</span><div><small>أعمالي المختارة</small><h3>محتويات ملف الإنجاز</h3></div></div>
+          <div id="myPortfolio" class="portfolio-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="learning" class="view">
+      <div class="section-head"><div><span class="eyebrow">كيف أتعلم بصورة أفضل؟</span><h3>تفضيلات تعلمي</h3></div></div>
+      <div class="learning-note">هذا القسم لا يضعك في «نمط ثابت»، بل يرصد الطرق التي تفضلها حاليًا كي تساعد المنصة والمعلم على تنويع الشرح والأنشطة.</div>
+      <form class="card" id="learningForm">
+        <div class="card-title"><span>◎</span><div><small>استبانة قصيرة</small><h3>اختر ما يناسبك أكثر</h3></div></div>
+        <div id="learningAssessment" class="learning-assessment"></div>
+        <button class="primary" type="submit">حفظ تفضيلاتي</button>
+      </form>
+      <div id="learningResult" class="learning-result"></div>
+    </section>
+
     <section id="results" class="view">
-      <div class="section-head"><div><span class="eyebrow">تشخيص شخصي</span><h3>ماذا أتقنت وماذا أحتاج؟</h3></div></div>
+      <div class="section-head"><div><span class="eyebrow">تقدمي في المادة</span><h3>مستواي وما الذي أحتاجه؟</h3></div></div>
+      <div id="studentProgressSummary" class="student-progress-summary"></div>
       <div id="resultsList" class="results-list"></div>
     </section>
   </main>
