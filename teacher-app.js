@@ -95,6 +95,11 @@ function openStudentProfile(id){
   $('#profileStudentMeta').textContent=d.student.id+' • '+d.student.className;
   renderStudentProfileOverview(d);
   renderStudentProfileTab('overview',d);
+  const statusBox=$('#profileStatusBadge');
+  if(statusBox){
+    const avg=d.p?.avg??null, level=d.p?.level||'قيد التشخيص';
+    statusBox.innerHTML='<span>المستوى الحالي</span><strong>'+level+'</strong><small>'+(avg===null?'لا توجد بيانات كافية':avg+'% متوسط الإتقان')+'</small>';
+  }
   show('profile');
   $('[data-profile-tab]').forEach(b=>b.classList.toggle('active',b.dataset.profileTab==='overview'));
 }
