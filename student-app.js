@@ -72,10 +72,18 @@ function saveKwl(){
     kwl_k:p[code].kwl.k,kwl_w:p[code].kwl.w,kwl_l:p[code].kwl.l
   }).catch(()=>{});
 }
-function openLesson(code){
+async function openLesson(code){
   code=String(code||'').trim().toUpperCase();
+  const feedback=$('#codeFeedback');
+  if(feedback)feedback.textContent='جارٍ التحقق من الدرس...';
+  try{await TamakkunAPI.request('lesson_access',{lesson_code:code});}
+  catch(err){
+    if(feedback)feedback.textContent=err?.message==='lesson_closed'?'هذا الدرس مغلق حاليًا من المعلم.':'الكود غير موجود أو غير متاح.';
+    return;
+  }
   const lesson=D.lessons[code];
-  if(!lesson){$('#codeFeedback').textContent='الكود غير موجود. تأكد منه ثم حاول مرة أخرى.';return;}
+  if(!lesson){if(feedback)feedback.textContent='الدرس موجود لكنه لم يجهز بعد في واجهة التعلم.';return;}
+  if(feedback)feedback.textContent='';
   state.lesson=lesson;state.answers={};
   const p=progress();p[code]=p[code]||{code,title:lesson.title,startedAt:new Date().toISOString(),status:'in_progress'};save(LS.progress,p);
   renderJourney(lesson,p[code]);updateStats();switchView('journey');
