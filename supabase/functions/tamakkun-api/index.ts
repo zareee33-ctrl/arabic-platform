@@ -170,6 +170,15 @@ Deno.serve(async (req: Request) => {
       return json({ user:cleanAccount(account), ...(await studentSnapshot(account.id)) });
     }
 
+    if (action === "course_catalog") {
+      const { data: lessons, error } = await db.from("lessons")
+        .select("id,code,title,unit_title,lesson_type,goal,mastery_threshold,is_published,source_start_page,source_end_page,content_version")
+        .like("code","U%")
+        .order("code");
+      if (error) throw error;
+      return json({ lessons: lessons || [] });
+    }
+
     if (action === "lesson_access") {
       if (account.role !== "student") return json({ error:"forbidden" }, 403);
       const code=String(body.lesson_code||"").trim().toUpperCase();
@@ -177,6 +186,25 @@ Deno.serve(async (req: Request) => {
       if(!lesson)return json({error:"lesson_not_found"},404);
       if(!lesson.is_published)return json({error:"lesson_closed",lesson:{code:lesson.code,title:lesson.title}},403);
       return json({lesson});
+    }
+
+    if (action === "record_learning_event") {
+      if (account.role !== "student") return json({ error:"forbidden" }, 403);
+      const lessonCode=String(body.lesson_code||"").trim().toUpperCase();
+      const {data:lesson}=await db.from("lessons").select("id,code").eq("code",lessonCode).maybeSingle();
+      if(!lesson)return json({error:"lesson_not_found"},404);
+      const row={
+        student_id:account.id,
+        lesson_id:lesson.id,
+        event_type:String(body.event_type||"interaction"),
+        interaction_type:body.interaction_type?String(body.interaction_type):null,
+        score:Number.isFinite(Number(body.score))?Number(body.score):null,
+        duration_ms:Number.isFinite(Number(body.duration_ms))?Number(body.duration_ms):null,
+        payload:body.payload&&typeof body.payload==="object"?body.payload:{}
+      };
+      const {error}=await db.from("learning_events").insert(row);
+      if(error)throw error;
+      return json({ok:true});
     }
 
     if (action === "save_progress") {
@@ -249,6 +277,24 @@ Deno.serve(async (req: Request) => {
     }
 
     if (!["teacher","admin"].includes(account.role)) return json({ error:"forbidden" }, 403);
+
+    if (action === "teacher_learning_analytics") {
+      if (!["teacher","admin"].includes(account.role)) return json({ error:"forbidden" }, 403);
+      const { data: events, error } = await db.from("learning_events")
+        .select("student_id,lesson_id,event_type,interaction_type,score,duration_ms,created_at")
+        .order("created_at",{ascending:false}).limit(1000);
+      if (error) throw error;
+      const studentIds=[...new Set((events||[]).map(x=>x.student_id))];
+      const lessonIds=[...new Set((events||[]).map(x=>x.lesson_id))];
+      const [{data:students},{data:lessons}]=await Promise.all([
+        studentIds.length?db.from("app_accounts").select("id,login_code,full_name,class_name").in("id",studentIds):Promise.resolve({data:[]}),
+        lessonIds.length?db.from("lessons").select("id,code,title,unit_title,lesson_type").in("id",lessonIds):Promise.resolve({data:[]})
+      ]);
+      const sm=Object.fromEntries((students||[]).map(x=>[x.id,x]));
+      const lm=Object.fromEntries((lessons||[]).map(x=>[x.id,x]));
+      const rows=(events||[]).map(x=>({...x,student:sm[x.student_id]||null,lesson:lm[x.lesson_id]||null}));
+      return json({events:rows});
+    }
 
     if (action === "teacher_snapshot") {
       const { data: students } = await db.from("app_accounts").select("id,login_code,full_name,grade,class_name,is_active,created_at")
