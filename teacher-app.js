@@ -3,7 +3,7 @@ const D=window.TAMAKKUN_DATA;
 const session=window.TamakkunAPI?.getSession();
 if(!session||!['teacher','admin'].includes(session.user?.role)){location.href='teacher.html';return;}
 let remoteStudents=[],currentRemoteProfile=null;
-const LS={progress:'tamakkun_progress_v1',submissions:'tamakkun_submissions_v1',portfolio:'tamakkun_portfolio_v1',learning:'tamakkun_learning_preferences_v1'};
+const LS={progress:'tamakkun_teacher_progress_v1',submissions:'tamakkun_teacher_submissions_v1',portfolio:'tamakkun_teacher_portfolio_v1',learning:'tamakkun_teacher_learning_v1'};
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const load=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(f))}catch{return f}};
 const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
