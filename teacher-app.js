@@ -192,8 +192,15 @@ function getStudentProfileData(){
   const s=currentRemoteProfile?.student||{};
   return {student:{id:s.login_code||s.id||'',name:s.full_name||'الطالب',className:(s.grade||'')+(s.class_name?' / '+s.class_name:'')},p,progressRows,portfolio,papers,learning};
 }
-function openStudentProfile(id){
-  currentProfileStudent=id||'S3A001';currentProfileTab='overview';
+async function openStudentProfile(id){
+  currentProfileStudent=id;currentProfileTab='overview';
+  try{
+    currentRemoteProfile=await TamakkunAPI.studentProfile(id);
+    mapRemoteProfileToLocal(currentRemoteProfile);
+  }catch{
+    alert('تعذر تحميل ملف الطالب. حاول مرة أخرى.');
+    return;
+  }
   const d=getStudentProfileData();
   $('#profileStudentName').textContent=d.student.name;
   $('#profileStudentMeta').textContent=d.student.id+' • '+d.student.className;
@@ -205,7 +212,7 @@ function openStudentProfile(id){
     statusBox.innerHTML='<span>المستوى الحالي</span><strong>'+level+'</strong><small>'+(avg===null?'لا توجد بيانات كافية':avg+'% متوسط الإتقان')+'</small>';
   }
   show('profile');
-  $$('[data-profile-tab]').forEach(b=>b.classList.toggle('active',b.dataset.profileTab==='overview'));
+  $('[data-profile-tab]').forEach(b=>b.classList.toggle('active',b.dataset.profileTab==='overview'));
 }
 function renderStudentProfileOverview(d){
   const host=$('#studentProfileOverview');if(!host)return;
