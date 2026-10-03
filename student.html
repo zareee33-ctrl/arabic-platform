@@ -31,16 +31,28 @@
       <label><span>الرقم السري</span><input id="studentPassword" type="password" autocomplete="current-password" inputmode="numeric" placeholder="••••••" required></label>
       <button class="auth-submit" type="submit">دخول الطالب</button>
       <div class="auth-message" id="studentMessage" aria-live="polite"></div>
-      <a class="preview-link" href="student-app.html">معاينة مساحة الطالب الحالية</a>
+      <small class="preview-link">الحساب التجريبي: S3A001</small>
     </form>
   </section>
 </main>
+<script src="api.js"></script>
 <script>
-document.getElementById('studentLoginForm').addEventListener('submit',function(e){
+document.getElementById('studentLoginForm').addEventListener('submit',async function(e){
   e.preventDefault();
   const box=document.getElementById('studentMessage');
-  box.textContent='واجهة الدخول جاهزة. ربط الحسابات الحقيقية وقاعدة البيانات هو الخطوة التالية.';
-  box.className='auth-message show';
+  const btn=this.querySelector('button[type="submit"]');
+  box.className='auth-message show';box.textContent='جارٍ التحقق من الحساب...';btn.disabled=true;
+  try{
+    const data=await TamakkunAPI.login(
+      document.getElementById('studentCode').value,
+      document.getElementById('studentPassword').value
+    );
+    if(data.user.role!=='student'){TamakkunAPI.clearSession();throw new Error('not_student')}
+    location.href='student-app.html';
+  }catch(err){
+    box.textContent='تعذر تسجيل الدخول. تأكد من رمز الطالب والرقم السري.';
+    btn.disabled=false;
+  }
 });
 </script>
 </body>
