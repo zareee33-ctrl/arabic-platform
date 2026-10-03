@@ -165,6 +165,8 @@
     <section class="teacher-view" id="t-analytics">
       <div class="teacher-section-head"><div><span class="eyebrow">متابعة شاملة لكل طالب</span><h2>المستوى والتقدم في المادة</h2><p>المستوى مبني على نتائج الدروس الفعلية، مع تفصيل المعرفة والتطبيق والاستدلال، وعدد الدروس المتقنة، وأولوية التدخل.</p></div></div>
       <div id="studentProgressTable" class="student-progress-table"></div>
+      <div class="teacher-section-head interaction-head"><div><span class="eyebrow">الكتاب التفاعلي</span><h2>تحليلات التفاعل داخل الدروس</h2><p>تعرض بدء الدروس، الأنشطة، طلب الدعم، والإتقان من سجل التفاعل الفعلي.</p></div><button id="refreshBookAnalytics" type="button">تحديث</button></div>
+      <div id="bookInteractionAnalytics" class="analytics-grid"></div>
       <div id="teacherAnalytics" class="analytics-grid"></div>
     </section>
   </main>
@@ -172,6 +174,7 @@
 <script src="api.js"></script>
 <script src="platform-data.js"></script>
 <script src="teacher-app.js"></script>
+<script src="book-teacher.js"></script>
 <script src="command-console.js"></script>
 </body>
 </html>
