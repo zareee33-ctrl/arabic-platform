@@ -48,12 +48,24 @@
 
     <section class="teacher-view" id="t-students">
       <div class="teacher-section-head"><div><span class="eyebrow">الحسابات</span><h2>الطلاب</h2><p>هذه الصفحة مهيأة لاستيراد قائمة الطلاب وإنشاء رمز ورقم سري مستقل لكل طالب.</p></div></div>
-      <div class="teacher-card wide-card">
-        <h3>الطلاب</h3>
-        <p>اضغط على اسم الطالب لفتح ملفه الشامل: المستوى، التقدم، النتائج، تفضيلات التعلم، ملف الإنجاز، الأعمال الورقية، وخطة المتابعة.</p>
-        <button class="student-profile-row" data-open-profile="S3A001">
-          <b>S3A001</b><span>الطالب التجريبي</span><span>ثالث متوسط / أ</span><em>فتح الملف الشامل ←</em>
-        </button>
+      <div class="student-admin-layout">
+        <div class="teacher-card">
+          <span class="eyebrow">حساب جديد</span>
+          <h3>إضافة طالب</h3>
+          <p>أنشئ للطالب رمز دخول ورقمًا سريًا مستقلًا دون استخدام رقم الهوية.</p>
+          <form id="createStudentForm" class="create-student-form">
+            <label>اسم الطالب<input id="newStudentName" required placeholder="الاسم الرباعي"></label>
+            <div class="form-two"><label>رمز الدخول<input id="newStudentCode" required placeholder="مثال: S3A015"></label><label>الرقم السري<input id="newStudentPassword" required minlength="6" inputmode="numeric" placeholder="6 أرقام أو أكثر"></label></div>
+            <label>الفصل<input id="newStudentClass" placeholder="مثال: أ"></label>
+            <button type="submit">إنشاء الحساب</button>
+            <p id="createStudentMessage" class="admin-form-message"></p>
+          </form>
+        </div>
+        <div class="teacher-card">
+          <div class="student-list-head"><div><span class="eyebrow">قائمة الطلاب</span><h3>ملفات الطلاب</h3></div><span id="studentCount" class="status-chip">0 طالب</span></div>
+          <p>اضغط على اسم الطالب لفتح ملفه الشامل: المستوى، التقدم، النتائج، تفضيلات التعلم، ملف الإنجاز، الأعمال الورقية، وخطة المتابعة.</p>
+          <div id="teacherStudentList" class="teacher-student-list"></div>
+        </div>
       </div>
     </section>
 
