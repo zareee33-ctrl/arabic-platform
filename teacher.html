@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#173f35">
+<title>دخول المعلم | مِنَصَّةُ تَمَكُّن</title>
+<link rel="stylesheet" href="portal.css">
+</head>
+<body class="auth-body teacher-auth">
+<main class="auth-layout">
+  <section class="auth-brand">
+    <a href="index.html" class="back-home">← الرئيسية</a>
+    <div class="brand-lockup">
+      <div class="brand-mark">ض</div>
+      <div><span class="eyebrow">لغتي الخالدة</span><h1>مِنَصَّةُ تَمَكُّن</h1></div>
+    </div>
+    <h2>بوابة المعلم</h2>
+    <p>مساحة مستقلة لإدارة الطلاب والدروس والأكواد والتصحيح والمتابعة.</p>
+    <ul>
+      <li>لا يستطيع حساب الطالب فتح أدوات المعلم</li>
+      <li>متابعة الإتقان حسب المهارة</li>
+      <li>مراجعة وتصحيح الأعمال الورقية</li>
+    </ul>
+  </section>
+
+  <section class="auth-panel">
+    <form class="auth-card" id="teacherLoginForm">
+      <div class="auth-title"><span>معلم</span><h2>تسجيل الدخول</h2><p>أدخل اسم المستخدم والرقم السري الخاص بالمعلم.</p></div>
+      <label><span>اسم المستخدم</span><input id="teacherUsername" autocomplete="username" placeholder="اسم المستخدم" required></label>
+      <label><span>الرقم السري</span><input id="teacherPassword" type="password" autocomplete="current-password" placeholder="••••••••" required></label>
+      <button class="auth-submit" type="submit">دخول المعلم</button>
+      <div class="auth-message" id="teacherMessage" aria-live="polite"></div>
+      <a class="preview-link" href="teacher-app.html">معاينة لوحة المعلم الجديدة</a>
+    </form>
+  </section>
+</main>
+<script>
+document.getElementById('teacherLoginForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  const box=document.getElementById('teacherMessage');
+  box.textContent='واجهة المعلم منفصلة الآن. تفعيل كلمة المرور الحقيقية سيتم عند ربط قاعدة البيانات.';
+  box.className='auth-message show';
+});
+</script>
+</body>
+</html>
