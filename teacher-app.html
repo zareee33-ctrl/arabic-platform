@@ -48,7 +48,30 @@
 
     <section class="teacher-view" id="t-students">
       <div class="teacher-section-head"><div><span class="eyebrow">الحسابات</span><h2>الطلاب</h2><p>هذه الصفحة مهيأة لاستيراد قائمة الطلاب وإنشاء رمز ورقم سري مستقل لكل طالب.</p></div></div>
-      <div class="teacher-card wide-card"><h3>الخطوة التالية لحسابات الطلاب</h3><p>سنربط هذه الصفحة بقاعدة البيانات، ثم تستورد الأسماء دفعة واحدة. لن نضع كلمات المرور داخل ملفات الموقع.</p><div class="student-demo-row"><b>S3A001</b><span>الطالب التجريبي</span><span>ثالث متوسط / أ</span><em>حساب تجريبي</em></div></div>
+      <div class="teacher-card wide-card">
+        <h3>الطلاب</h3>
+        <p>اضغط على اسم الطالب لفتح ملفه الشامل: المستوى، التقدم، النتائج، تفضيلات التعلم، ملف الإنجاز، الأعمال الورقية، وخطة المتابعة.</p>
+        <button class="student-profile-row" data-open-profile="S3A001">
+          <b>S3A001</b><span>الطالب التجريبي</span><span>ثالث متوسط / أ</span><em>فتح الملف الشامل ←</em>
+        </button>
+      </div>
+    </section>
+
+    <section class="teacher-view" id="t-profile">
+      <div class="teacher-section-head profile-heading">
+        <div><span class="eyebrow">ملف الطالب الشامل</span><h2 id="profileStudentName">الطالب</h2><p id="profileStudentMeta"></p></div>
+        <button class="profile-back" data-go="students">← العودة إلى الطلاب</button>
+      </div>
+      <div id="studentProfileOverview"></div>
+      <div class="profile-tabs">
+        <button class="active" data-profile-tab="overview">نظرة عامة</button>
+        <button data-profile-tab="lessons">الدروس والنتائج</button>
+        <button data-profile-tab="portfolio">ملف الإنجاز</button>
+        <button data-profile-tab="papers">الأعمال الورقية</button>
+        <button data-profile-tab="learning">تفضيلات التعلم</button>
+        <button data-profile-tab="plan">خطة المتابعة</button>
+      </div>
+      <div id="studentProfileContent" class="student-profile-content"></div>
     </section>
 
     <section class="teacher-view" id="t-portfolio">
