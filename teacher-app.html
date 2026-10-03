@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#173f35">
 <title>لوحة المعلم | مِنَصَّةُ تَمَكُّن</title>
 <link rel="stylesheet" href="portal.css">
 </head>
@@ -11,50 +12,69 @@
   <aside class="teacher-side">
     <div class="brand-lockup compact"><div class="brand-mark">ض</div><div><strong>مِنَصَّةُ تَمَكُّن</strong><small>لوحة المعلم</small></div></div>
     <nav>
-      <button class="active">الرئيسية</button>
-      <button>الدروس والأكواد</button>
-      <button>الطلاب</button>
-      <button>أعمال الطلاب</button>
-      <button>الإتقان والتحليل</button>
+      <button class="active" data-tview="dashboard">الرئيسية</button>
+      <button data-tview="lessons">الدروس والأكواد</button>
+      <button data-tview="students">الطلاب</button>
+      <button data-tview="papers">أعمال الطلاب</button>
+      <button data-tview="analytics">الإتقان والتحليل</button>
     </nav>
     <a href="index.html" class="side-exit">العودة لبوابات الدخول</a>
   </aside>
+
   <main class="teacher-main">
-    <header class="teacher-top">
-      <div><span class="eyebrow">لغتي الخالدة • ثالث متوسط</span><h1>لوحة المعلم</h1></div>
-      <span class="status-chip">نسخة تأسيسية</span>
-    </header>
+    <header class="teacher-top"><div><span class="eyebrow">لغتي الخالدة • ثالث متوسط</span><h1 id="teacherPageTitle">لوحة المعلم</h1></div><span class="status-chip">مرحلة بناء تفاعلية</span></header>
 
-    <section class="teacher-hero">
-      <div><span>المتابعة اليوم</span><h2>ما الذي يحتاج تدخلك؟</h2><p>ستتحول هذه البطاقات إلى بيانات حقيقية بعد ربط حسابات الطلاب.</p></div>
-      <button>إنشاء رحلة درس</button>
+    <section class="teacher-view active" id="t-dashboard">
+      <section class="teacher-hero"><div><span>المتابعة اليوم</span><h2>ما الذي يحتاج تدخلك؟</h2><p>الواجهة تعرض رحلة التعلم، الأعمال الورقية، وتشخيص الإتقان في مكان واحد.</p></div><button data-go="lessons">إدارة الدروس</button></section>
+      <section class="teacher-kpis">
+        <article><span>أعمال تنتظر التصحيح</span><strong id="kpiPending">0</strong><small>من أعمال الطلاب</small></article>
+        <article><span>طلاب يحتاجون دعمًا</span><strong id="kpiSupport">0</strong><small>بحسب نتائج الإتقان</small></article>
+        <article><span>دروس جاهزة بالكود</span><strong id="kpiLessons">2</strong><small>لكل درس كود مستقل</small></article>
+        <article><span>متوسط الإتقان</span><strong id="kpiAverage">—</strong><small>معرفة • تطبيق • استدلال</small></article>
+      </section>
+      <section class="teacher-grid">
+        <article class="teacher-card"><div class="card-head"><div><span class="eyebrow">الوصول السريع</span><h3>الدروس والأكواد</h3></div><b>01</b></div><p>كل درس يملك كودًا واحدًا يفتح رحلة الطالب مباشرة.</p><button data-go="lessons">فتح إدارة الدروس</button></article>
+        <article class="teacher-card"><div class="card-head"><div><span class="eyebrow">شواهد التعلم</span><h3>أعمال الطلاب</h3></div><b>02</b></div><p>افتح صورة الطالب، صحح فوقها، ثم أرسلها له مع ملاحظتك.</p><button data-go="papers">فتح الأعمال</button></article>
+        <article class="teacher-card"><div class="card-head"><div><span class="eyebrow">التشخيص</span><h3>الإتقان والتحليل</h3></div><b>03</b></div><p>اعرف مستوى المعرفة والتطبيق والاستدلال بدل النسبة العامة فقط.</p><button data-go="analytics">فتح التحليل</button></article>
+      </section>
     </section>
 
-    <section class="teacher-kpis">
-      <article><span>أعمال تنتظر التصحيح</span><strong>—</strong><small>يظهر العدد بعد الربط</small></article>
-      <article><span>طلاب يحتاجون دعمًا</span><strong>—</strong><small>بحسب المهارات</small></article>
-      <article><span>دروس منشورة</span><strong>—</strong><small>لكل درس كود وQR</small></article>
-      <article><span>متوسط الإتقان</span><strong>—</strong><small>معرفة • تطبيق • استدلال</small></article>
+    <section class="teacher-view" id="t-lessons">
+      <div class="teacher-section-head"><div><span class="eyebrow">إرسال الدرس</span><h2>الدروس والأكواد</h2><p>انسخ الكود وأرسله للطلاب. في المرحلة التالية نضيف QR وفتح/إغلاق الدرس.</p></div></div>
+      <div id="lessonAdminList" class="lesson-admin-list"></div>
     </section>
 
-    <section class="teacher-grid">
-      <article class="teacher-card">
-        <div class="card-head"><div><span class="eyebrow">الوصول السريع</span><h3>الدروس والأكواد</h3></div><b>01</b></div>
-        <p>إنشاء كود واحد لكل درس يفتح رحلة الطالب مباشرة، مع إمكانية إغلاق الدرس أو فتحه.</p>
-        <button>فتح إدارة الدروس</button>
-      </article>
-      <article class="teacher-card">
-        <div class="card-head"><div><span class="eyebrow">شواهد التعلم</span><h3>أعمال الطلاب</h3></div><b>02</b></div>
-        <p>استقبال صور الأعمال الورقية، التصحيح فوق الصورة، ثم إرسال النسخة المصححة للطالب.</p>
-        <button>فتح الأعمال</button>
-      </article>
-      <article class="teacher-card">
-        <div class="card-head"><div><span class="eyebrow">التشخيص</span><h3>الإتقان والتحليل</h3></div><b>03</b></div>
-        <p>إظهار ما أتقنه الطالب وما يحتاجه بدل الاكتفاء بنسبة عامة.</p>
-        <button>فتح التحليل</button>
-      </article>
+    <section class="teacher-view" id="t-students">
+      <div class="teacher-section-head"><div><span class="eyebrow">الحسابات</span><h2>الطلاب</h2><p>هذه الصفحة مهيأة لاستيراد قائمة الطلاب وإنشاء رمز ورقم سري مستقل لكل طالب.</p></div></div>
+      <div class="teacher-card wide-card"><h3>الخطوة التالية لحسابات الطلاب</h3><p>سنربط هذه الصفحة بقاعدة البيانات، ثم تستورد الأسماء دفعة واحدة. لن نضع كلمات المرور داخل ملفات الموقع.</p><div class="student-demo-row"><b>S3A001</b><span>الطالب التجريبي</span><span>ثالث متوسط / أ</span><em>حساب تجريبي</em></div></div>
+    </section>
+
+    <section class="teacher-view" id="t-papers">
+      <div class="teacher-section-head"><div><span class="eyebrow">التصحيح الرقمي</span><h2>أعمال الطلاب</h2><p>صحح فوق الصورة، أضف ملاحظة، ثم أرسل النسخة المصححة للطالب.</p></div></div>
+      <div class="correction-layout">
+        <div class="teacher-card"><div id="teacherSubmissionList" class="teacher-submission-list"></div></div>
+        <div class="teacher-card correction-workspace">
+          <div id="correctionEmpty" class="empty-correction">اختر عملًا من القائمة لبدء التصحيح.</div>
+          <div id="correctionEditor" hidden>
+            <div class="correction-meta"><div><span id="corrStudent"></span><h3 id="corrLesson"></h3></div><span id="corrStatus" class="status-chip"></span></div>
+            <div class="canvas-wrap"><canvas id="correctionCanvas"></canvas></div>
+            <div class="correction-toolbar">
+              <button data-tool="pen">قلم</button><button data-tool="check">✓</button><button data-tool="x">✕</button><button data-tool="clear">إعادة الأصل</button>
+            </div>
+            <label class="note-label">ملاحظة للطالب<textarea id="teacherNote" placeholder="مثال: راجع ضبط الكلمة في السطر الثالث"></textarea></label>
+            <div class="correction-actions"><button id="sendRevision">إرسال للتعديل</button><button id="approveSubmission" class="approve">اعتماد العمل</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="teacher-view" id="t-analytics">
+      <div class="teacher-section-head"><div><span class="eyebrow">تشخيص لا درجات فقط</span><h2>الإتقان والتحليل</h2><p>يعرض المستوى الذي يحتاج إلى تدخل: معرفة، تطبيق، أو استدلال.</p></div></div>
+      <div id="teacherAnalytics" class="analytics-grid"></div>
     </section>
   </main>
 </div>
+<script src="platform-data.js"></script>
+<script src="teacher-app.js"></script>
 </body>
 </html>
