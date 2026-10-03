@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#132f29">
+<title>نموذج الإتقان 100% | مِنَصَّةُ تَمَكُّن</title>
+<link rel="stylesheet" href="mastery-prototype.css">
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark">ت</div>
+      <div><strong>مِنَصَّةُ تَمَكُّن</strong><small>نموذج رحلة الإتقان 100%</small></div>
+    </div>
+    <div class="student">
+      <div class="avatar">ط</div>
+      <div><b>الطالب</b><small>ثالث متوسط • لغتي الخالدة</small></div>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="mission-panel">
+      <span class="eyebrow">مهمتك الحالية</span>
+      <h1>أتقن درس الحال</h1>
+      <p>لن تنهي الدرس حتى تثبت فهمك في أربع مهارات صغيرة. إذا تعثرت، تتغير طريقة الشرح بدل إعادة الدرس كاملًا.</p>
+
+      <div class="mastery-meter">
+        <div class="meter-head"><span>الإتقان الحقيقي</span><strong id="overallMastery">0%</strong></div>
+        <div class="meter"><span id="overallBar"></span></div>
+      </div>
+
+      <div id="skillMap" class="skill-map"></div>
+
+      <div class="coach-card">
+        <div class="coach-icon">✦</div>
+        <div><b>المعلم الذكي</b><p id="coachText">سأراقب أين تتعثر وأعطيك المساعدة المناسبة فقط.</p></div>
+      </div>
+    </aside>
+
+    <section class="experience">
+      <div class="experience-head">
+        <div>
+          <span class="eyebrow" id="stageEyebrow">ابدأ بالاكتشاف</span>
+          <h2 id="stageTitle">كيف نعرف الحال؟</h2>
+        </div>
+        <div class="streak"><span>سلسلة الفهم</span><b id="streakValue">0</b></div>
+      </div>
+
+      <div id="scene" class="scene"></div>
+
+      <div class="support-strip">
+        <button id="hintBtn" class="ghost">تلميح</button>
+        <button id="simplifyBtn" class="ghost">مثال أبسط</button>
+        <button id="explainBtn" class="ghost">اشرحها بطريقة أخرى</button>
+      </div>
+    </section>
+
+    <aside class="insight-panel">
+      <div class="insight-card">
+        <span class="eyebrow">لماذا هذه الخطوة؟</span>
+        <h3 id="whyTitle">نبني الفكرة قبل القاعدة</h3>
+        <p id="whyText">نبدأ بموقف قصير حتى تكتشف وظيفة الحال بنفسك.</p>
+      </div>
+
+      <div class="insight-card compact">
+        <span class="eyebrow">قرار المنصة الآن</span>
+        <div class="decision" id="decisionText">تشخيص خفيف</div>
+      </div>
+
+      <div class="insight-card compact">
+        <span class="eyebrow">ما الذي يُقاس؟</span>
+        <ul id="evidenceList">
+          <li>دقة الإجابة</li>
+          <li>عدد المحاولات</li>
+          <li>نوع التلميح</li>
+          <li>القدرة على نقل الفهم</li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<div id="rewardLayer" class="reward-layer" aria-hidden="true">
+  <div class="reward-card">
+    <div class="reward-badge">✓</div>
+    <span class="eyebrow">تم فتح المهارة</span>
+    <h2 id="rewardTitle">أحسنت</h2>
+    <p id="rewardText"></p>
+    <button id="rewardContinue">أكمل الرحلة</button>
+  </div>
+</div>
+
+<script src="mastery-prototype.js"></script>
+</body>
+</html>
