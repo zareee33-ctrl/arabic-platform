@@ -73,6 +73,23 @@ async function syncTeacherData(){
   renderStudentList();
   updateKpis();
 }
+function summarizeRemote(rows){
+  const scored=(rows||[]).filter(x=>Number.isFinite(x.score));
+  if(!scored.length)return null;
+  const avg=Math.round(scored.reduce((a,b)=>a+b.score,0)/scored.length);
+  const mastered=scored.filter(x=>x.status==='mastered').length;
+  const vals={knowledge:[],application:[],reasoning:[]};
+  scored.forEach(r=>{
+    if(Number.isFinite(r.knowledge_percent))vals.knowledge.push(r.knowledge_percent);
+    if(Number.isFinite(r.application_percent))vals.application.push(r.application_percent);
+    if(Number.isFinite(r.reasoning_percent))vals.reasoning.push(r.reasoning_percent);
+  });
+  const a={};
+  for(const k of Object.keys(vals))a[k]=vals[k].length?Math.round(vals[k].reduce((x,y)=>x+y,0)/vals[k].length):0;
+  const keys=['knowledge','application','reasoning'];
+  const strongest=[...keys].sort((x,y)=>a[y]-a[x])[0],weakest=[...keys].sort((x,y)=>a[x]-a[y])[0];
+  return {avg,mastered,total:scored.length,a,strongest,weakest,level:avg>=90?'متقدم':avg>=80?'متقن':avg>=65?'نامٍ':'يحتاج دعمًا'};
+}
 function renderLessons(){
   $('#lessonAdminList').innerHTML=Object.values(D.lessons).map(l=>`<article class="lesson-admin-card"><div><span class="eyebrow">${esc(l.type)} • ${esc(l.unit)}</span><h3>${esc(l.title)}</h3><p>${esc(l.goal)}</p></div><div class="lesson-code-box"><small>كود الدرس</small><strong>${esc(l.code)}</strong><button data-copy="${esc(l.code)}">نسخ الكود</button></div></article>`).join('');
   $$('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(b.dataset.copy);b.textContent='تم النسخ ✓'}catch{b.textContent=b.dataset.copy}}));
@@ -121,23 +138,27 @@ async function saveCorrection(status){
 $('#sendRevision').addEventListener('click',()=>saveCorrection('needs_revision'));$('#approveSubmission').addEventListener('click',()=>saveCorrection('approved'));
 
 function renderAnalytics(){
-  const vals=Object.values(load(LS.progress,{})),host=$('#teacherAnalytics');
-  if(!vals.length){host.innerHTML='<div class="teacher-card wide-card">لا توجد نتائج حتى الآن. أكمل قياس إتقان من مساحة الطالب التجريبية.</div>';return;}
-  host.innerHTML=vals.map(r=>`<article class="analytics-card"><div><span class="eyebrow">${esc(r.code)}</span><h3>${esc(r.title)}</h3></div><strong>${Number.isFinite(r.score)?r.score+'%':'قيد التعلم'}</strong>${r.levels?'<div class="analytics-levels"><span>معرفة <b>'+r.levels.knowledge.score+'%</b></span><span>تطبيق <b>'+r.levels.application.score+'%</b></span><span>استدلال <b>'+r.levels.reasoning.score+'%</b></span></div>':''}<p>${r.status==='needs_support'?'يحتاج معالجة موجهة':'متقن أو قيد التعلم'}</p></article>`).join('');
+  const host=$('#teacherAnalytics');if(!host)return;
+  const rows=remoteStudents.flatMap(x=>(x.progress||[]).map(r=>({student:x.student,row:r})));
+  if(!rows.length){host.innerHTML='<div class="teacher-card wide-card">لا توجد نتائج حتى الآن.</div>';return;}
+  host.innerHTML=rows.map(({student,row:r})=>'<article class="analytics-card"><div><span class="eyebrow">'+esc(student.full_name)+' • '+esc(r.lessons?.code||'')+'</span><h3>'+esc(r.lessons?.title||'درس')+'</h3></div><strong>'+(Number.isFinite(r.score)?r.score+'%':'قيد التعلم')+'</strong><div class="analytics-levels"><span>معرفة <b>'+(r.knowledge_percent??'—')+(r.knowledge_percent===null?'':'%')+'</b></span><span>تطبيق <b>'+(r.application_percent??'—')+(r.application_percent===null?'':'%')+'</b></span><span>استدلال <b>'+(r.reasoning_percent??'—')+(r.reasoning_percent===null?'':'%')+'</b></span></div><p>'+(r.status==='needs_support'?'يحتاج معالجة موجهة':r.status==='mastered'?'متقن':'قيد التعلم')+'</p></article>').join('');
 }
 
+
 function renderPortfolio(){
-  const arr=load(LS.portfolio,[]),host=$('#teacherPortfolio');if(!host)return;
-  $('#portfolioCount').textContent=arr.length+' أعمال';
-  if(!arr.length){host.innerHTML='<div class="empty-correction">لا توجد أعمال في ملف الإنجاز حتى الآن.</div>';return;}
-  host.innerHTML=arr.map(x=>'<article class="teacher-portfolio-item"><img src="'+x.image+'" alt=""><div><span>'+esc(x.category)+'</span><h4>'+esc(x.title)+'</h4><p>'+esc(x.reflection||'لم يكتب الطالب تأملًا بعد.')+'</p><small>'+new Date(x.createdAt).toLocaleDateString('ar-SA')+'</small></div></article>').join('');
+  const host=$('#teacherPortfolio');if(!host)return;
+  const all=remoteStudents.flatMap(x=>(x.portfolio||[]).map(p=>({student:x.student,item:p})));
+  $('#portfolioCount').textContent=all.length+' أعمال';
+  if(!all.length){host.innerHTML='<div class="empty-correction">لا توجد أعمال في ملفات الإنجاز حتى الآن.</div>';return;}
+  host.innerHTML=all.map(({student,item:x})=>'<article class="teacher-portfolio-item"><img src="'+(x.image_url||'')+'" alt=""><div><span>'+esc(student.full_name)+' • '+esc(x.category)+'</span><h4>'+esc(x.title)+'</h4><p>'+esc(x.reflection||'لم يكتب الطالب تأملًا بعد.')+'</p><small>'+new Date(x.created_at).toLocaleDateString('ar-SA')+'</small></div></article>').join('');
 }
 function renderLearningProfiles(){
-  const data=load(LS.learning,{}),host=$('#teacherLearningProfiles');if(!host)return;
-  if(!data.primary){host.innerHTML='<div class="teacher-card wide-card">لم يكمل الطالب استبانة تفضيلات التعلم بعد.</div>';return;}
+  const host=$('#teacherLearningProfiles');if(!host)return;
   const labels={visual:'يميل حاليًا إلى العرض البصري',verbal:'يميل حاليًا إلى الشرح اللفظي المنظم',active:'يميل حاليًا إلى التعلم بالممارسة'};
-  const suggestions={visual:'استخدم خرائط مفاهيم ومقارنات وتمثيلات بصرية، مع إبقاء أنشطة تطبيقية متنوعة.',verbal:'استخدم شرحًا متسلسلًا وتلخيصًا لغويًا وأمثلة واضحة، مع تنويع النشاط.',active:'استخدم بناء الجملة والسحب والترتيب والتجربة والتغذية الراجعة، مع دعم بصري ولفظي.'};
-  host.innerHTML='<article class="learning-profile-card"><div><span class="eyebrow">الطالب التجريبي</span><h3>'+labels[data.primary]+'</h3><p>'+suggestions[data.primary]+'</p></div><div class="teacher-preference-bars">'+Object.entries(data.scores||{}).map(([k,v])=>'<span>'+({visual:'بصري',verbal:'لفظي',active:'عملي'}[k])+' <b>'+v+'</b></span>').join('')+'</div><small>هذه تفضيلات حالية وليست تصنيفًا ثابتًا للطالب.</small></article>';
+  const suggestions={visual:'استخدم خرائط مفاهيم ومقارنات وتمثيلات بصرية مع تنويع النشاط.',verbal:'استخدم شرحًا متسلسلًا وتلخيصًا لغويًا وأمثلة واضحة.',active:'استخدم بناء الجملة والسحب والترتيب والتجربة والتغذية الراجعة.'};
+  const rows=remoteStudents.filter(x=>x.learning?.primary_preference);
+  if(!rows.length){host.innerHTML='<div class="teacher-card wide-card">لم يكمل أي طالب استبانة تفضيلات التعلم بعد.</div>';return;}
+  host.innerHTML=rows.map(x=>{const d=x.learning,p=d.primary_preference;return '<article class="learning-profile-card"><div><span class="eyebrow">'+esc(x.student.full_name)+'</span><h3>'+labels[p]+'</h3><p>'+suggestions[p]+'</p></div><div class="teacher-preference-bars"><span>بصري <b>'+d.visual_score+'</b></span><span>لفظي <b>'+d.verbal_score+'</b></span><span>عملي <b>'+d.active_score+'</b></span></div><small>تفضيل حالي وليس تصنيفًا ثابتًا.</small></article>'}).join('');
 }
 function buildProgress(){
   const vals=Object.values(load(LS.progress,{})),scored=vals.filter(x=>Number.isFinite(x.score));
@@ -151,11 +172,18 @@ function buildProgress(){
   return {avg,mastered,total:scored.length,a,strongest,weakest,labels,level};
 }
 function renderStudentProgress(){
-  const host=$('#studentProgressTable');if(!host)return;const p=buildProgress();
-  if(!p){host.innerHTML='<div class="teacher-card wide-card">لا توجد نتائج كافية لتحديد مستوى الطالب بعد.</div>';return;}
-  const support=p.avg<65?'علاجي مكثف':p.a[p.weakest]<80?'علاج موجه في '+p.labels[p.weakest]:'إثراء واستمرار';
-  host.innerHTML='<article class="student-progress-card"><div class="student-progress-main"><div><span class="eyebrow">S3A001 • الطالب التجريبي</span><h3>'+p.level+'</h3><p>أتقن '+p.mastered+' من '+p.total+' دروس مقاسة.</p></div><strong>'+p.avg+'%</strong></div><div class="student-progress-metrics"><div><span>معرفة</span><b>'+p.a.knowledge+'%</b></div><div><span>تطبيق</span><b>'+p.a.application+'%</b></div><div><span>استدلال</span><b>'+p.a.reasoning+'%</b></div><div><span>نقطة القوة</span><b>'+p.labels[p.strongest]+'</b></div><div><span>أولوية التحسين</span><b>'+p.labels[p.weakest]+'</b></div><div><span>المسار المقترح</span><b>'+support+'</b></div></div></article>';
+  const host=$('#studentProgressTable');if(!host)return;
+  if(!remoteStudents.length){host.innerHTML='<div class="teacher-card wide-card">لا يوجد طلاب بعد.</div>';return;}
+  const labels={knowledge:'المعرفة',application:'التطبيق',reasoning:'الاستدلال'};
+  host.innerHTML=remoteStudents.map(x=>{
+    const p=summarizeRemote(x.progress||[]);
+    if(!p)return '<article class="student-progress-card"><div class="student-progress-main"><div><span class="eyebrow">'+esc(x.student.login_code)+' • '+esc(x.student.full_name)+'</span><h3>لم يحدد بعد</h3><p>لا توجد نتائج كافية لتحديد مستوى الطالب.</p></div><strong>—</strong></div></article>';
+    const support=p.avg<65?'علاجي مكثف':p.a[p.weakest]<80?'علاج موجه في '+labels[p.weakest]:'إثراء واستمرار';
+    return '<article class="student-progress-card"><div class="student-progress-main"><div><span class="eyebrow">'+esc(x.student.login_code)+' • '+esc(x.student.full_name)+'</span><h3>'+p.level+'</h3><p>أتقن '+p.mastered+' من '+p.total+' دروس مقاسة.</p></div><strong>'+p.avg+'%</strong></div><div class="student-progress-metrics"><div><span>معرفة</span><b>'+p.a.knowledge+'%</b></div><div><span>تطبيق</span><b>'+p.a.application+'%</b></div><div><span>استدلال</span><b>'+p.a.reasoning+'%</b></div><div><span>نقطة القوة</span><b>'+labels[p.strongest]+'</b></div><div><span>أولوية التحسين</span><b>'+labels[p.weakest]+'</b></div><div><span>المسار المقترح</span><b>'+support+'</b></div></div><button class="open-from-progress" data-open-profile="'+x.student.id+'">فتح ملف الطالب</button></article>';
+  }).join('');
+  $$('[data-open-profile]').forEach(b=>b.addEventListener('click',()=>openStudentProfile(b.dataset.openProfile)));
 }
+
 
 
 let currentProfileStudent='S3A001',currentProfileTab='overview';
