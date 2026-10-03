@@ -37,7 +37,7 @@ function statusText(s){return ({queued:'بالانتظار',running:'قيد ال
 function renderResult(data){
   const box=$('#commandResult'); if(!box)return;
   const c=data.command||data;
-  box.className='command-result '+(c.status==='failed'?'error':'success');
+  box.className='ops-result '+(c.status==='failed'?'error':'success');
   box.innerHTML='<div><span>الحالة</span><strong>'+esc(statusText(c.status||'succeeded'))+'</strong></div>'+
     '<div><span>نوع العملية</span><strong>'+esc(labels[c.command_type]||c.command_type||'أمر مباشر')+'</strong></div>'+
     '<div><span>رقم العملية</span><code>'+esc(c.id||c.command_id||'—')+'</code></div>'+
@@ -45,14 +45,14 @@ function renderResult(data){
 }
 async function refresh(){
   const host=$('#commandLog'); if(!host)return;
-  host.innerHTML='<div class="command-loading">جارٍ تحميل سجل التنفيذ...</div>';
+  host.innerHTML='<div class="ops-loading">جارٍ تحميل سجل التنفيذ...</div>';
   try{
     const data=await call({action:'logs',limit:30});
     const rows=data.commands||[];
-    if(!rows.length){host.innerHTML='<div class="command-empty">لا توجد أوامر منفذة بعد.</div>';return}
-    host.innerHTML=rows.map(c=>'<article class="command-log-row">'+
-      '<div class="command-log-main"><span class="command-status '+esc(c.status)+'">'+esc(statusText(c.status))+'</span><div><b>'+esc(c.raw_command||labels[c.command_type]||c.command_type)+'</b><small>'+new Date(c.created_at).toLocaleString('ar-SA')+'</small></div></div>'+
-      '<div class="command-log-actions"><code>'+esc((c.id||'').slice(0,8))+'</code>'+
+    if(!rows.length){host.innerHTML='<div class="ops-empty">لا توجد أوامر منفذة بعد.</div>';return}
+    host.innerHTML=rows.map(c=>'<article class="ops-row">'+
+      '<div class="ops-main"><span class="ops-status '+esc(c.status)+'">'+esc(statusText(c.status))+'</span><div><b>'+esc(c.raw_command||labels[c.command_type]||c.command_type)+'</b><small>'+new Date(c.created_at).toLocaleString('ar-SA')+'</small></div></div>'+
+      '<div class="ops-log-actions"><code>'+esc((c.id||'').slice(0,8))+'</code>'+
       (c.status==='succeeded'&&['lesson.set_published','lesson.set_mastery_threshold','student.set_active','student.assign_intervention'].includes(c.command_type)?'<button data-rollback="'+esc(c.id)+'">تراجع</button>':'')+
       '</div></article>').join('');
     host.querySelectorAll('[data-rollback]').forEach(b=>b.addEventListener('click',async()=>{
@@ -62,7 +62,7 @@ async function refresh(){
       catch(e){alert(errors[e.message]||'تعذر التراجع عن العملية.')}
       finally{b.disabled=false}
     }));
-  }catch(e){host.innerHTML='<div class="command-empty error">تعذر تحميل سجل التنفيذ.</div>'}
+  }catch(e){host.innerHTML='<div class="ops-empty error">تعذر تحميل سجل التنفيذ.</div>'}
 }
 async function submitCommand(raw){
   const input=$('#commandInput'),btn=$('#runCommandBtn'),msg=$('#commandMessage');
