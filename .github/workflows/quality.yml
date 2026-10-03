@@ -1,0 +1,23 @@
+name: Quality Gate
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: JavaScript syntax
+        run: |
+          node --check api.js
+          node --check student-app.js
+          node --check teacher-app.js
+          node --check command-console.js
+      - name: Static integration contract
+        run: node scripts/verify-static.mjs
