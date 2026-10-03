@@ -51,7 +51,7 @@ async function hydrateRemote(){
   return snap;
 }
 const toast=msg=>{const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)};
-const titles={home:'مرحبًا بك في لغتي',journey:'رحلة الدرس',papers:'أعمالي الورقية',portfolio:'ملف إنجازي',learning:'تفضيلات تعلمي',results:'تقدمي ونتائجي'};
+const titles={home:'مرحبًا بك في لغتي',book:'كتابي التفاعلي',journey:'رحلة الدرس',papers:'أعمالي الورقية',portfolio:'ملف إنجازي',learning:'تفضيلات تعلمي',results:'تقدمي ونتائجي'};
 window.switchView=id=>{ $$('.view').forEach(v=>v.classList.toggle('active-view',v.id===id)); $$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===id)); $('#pageTitle').textContent=titles[id]||'مِنَصَّةُ تَمَكُّن'; window.scrollTo({top:0,behavior:'smooth'}); if(id==='papers')renderSubmissions(); if(id==='portfolio')renderPortfolio(); if(id==='learning')renderLearningPreferences(); if(id==='results'){renderResults();renderProgressSummary();} };
 $$('.nav-item').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
 $('#menuBtn').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));
