@@ -1,5 +1,7 @@
 (()=>{'use strict';
 const D=window.TAMAKKUN_DATA;
+const session=window.TamakkunAPI?.requireRole('student','student.html');
+if(!session)return;
 const LS={progress:'tamakkun_progress_v1',submissions:'tamakkun_submissions_v1',portfolio:'tamakkun_portfolio_v1',learning:'tamakkun_learning_preferences_v1'};
 const state={lesson:null,answers:{},kwl:{},fileData:null,portfolioFileData:null};
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -8,6 +10,46 @@ const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const progress=()=>load(LS.progress,{});
 const submissions=()=>load(LS.submissions,[]);
+$('#studentName').textContent=session.user.full_name||'الطالب';
+$('#logoutBtn')?.addEventListener('click',async e=>{e.preventDefault();await TamakkunAPI.logout();location.href='student.html';});
+async function hydrateRemote(){
+  const snap=await TamakkunAPI.studentSnapshot();
+  const p={};
+  (snap.progress||[]).forEach(row=>{
+    const code=row.lessons?.code||row.lesson_code||'';
+    if(!code)return;
+    p[code]={
+      code,title:row.lessons?.title||code,score:row.score,
+      levels:row.knowledge_percent===null?null:{
+        knowledge:{score:row.knowledge_percent,label:'معرفة'},
+        application:{score:row.application_percent,label:'تطبيق'},
+        reasoning:{score:row.reasoning_percent,label:'استدلال'}
+      },
+      status:row.status,
+      startedAt:row.started_at,lastAttemptAt:row.last_attempt_at,
+      kwl:{k:row.kwl_k||'',w:row.kwl_w||'',l:row.kwl_l||''}
+    };
+  });
+  save(LS.progress,p);
+  const pf=(snap.portfolio||[]).map(x=>({
+    id:x.id,studentId:session.user.id,title:x.title,category:x.category,
+    reflection:x.reflection||'',image:x.image_url||'',createdAt:x.created_at
+  }));
+  save(LS.portfolio,pf);
+  const ps=(snap.papers||[]).map(x=>({
+    id:x.id,studentId:session.user.id,studentName:session.user.full_name,
+    lessonCode:x.lessons?.code||'',lessonTitle:x.lessons?.title||'',type:x.work_type,
+    image:x.original_url||'',correctedImage:x.corrected_url||null,status:x.status,
+    teacherNote:x.teacher_note||'',createdAt:x.created_at,reviewedAt:x.reviewed_at
+  }));
+  save(LS.submissions,ps);
+  const lp=snap.learning;
+  save(LS.learning,lp?{
+    answers:lp.responses||{},scores:{visual:lp.visual_score,verbal:lp.verbal_score,active:lp.active_score},
+    primary:lp.primary_preference,updatedAt:lp.updated_at
+  }:{});
+  return snap;
+}
 const toast=msg=>{const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)};
 const titles={home:'مرحبًا بك في لغتي',journey:'رحلة الدرس',papers:'أعمالي الورقية',portfolio:'ملف إنجازي',learning:'تفضيلات تعلمي',results:'تقدمي ونتائجي'};
 window.switchView=id=>{ $$('.view').forEach(v=>v.classList.toggle('active-view',v.id===id)); $$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===id)); $('#pageTitle').textContent=titles[id]||'مِنَصَّةُ تَمَكُّن'; window.scrollTo({top:0,behavior:'smooth'}); if(id==='papers')renderSubmissions(); if(id==='portfolio')renderPortfolio(); if(id==='learning')renderLearningPreferences(); if(id==='results'){renderResults();renderProgressSummary();} };
@@ -20,6 +62,15 @@ function saveKwl(){
   p[code]=p[code]||{code,title:state.lesson.title,startedAt:new Date().toISOString()};
   p[code].kwl={k:$('#kwlK')?.value||'',w:$('#kwlW')?.value||'',l:$('#kwlL')?.value||''};
   save(LS.progress,p);
+  TamakkunAPI.saveProgress({
+    lesson_code:code,
+    status:p[code].status||'in_progress',
+    score:Number.isFinite(p[code].score)?p[code].score:null,
+    knowledge_percent:p[code].levels?.knowledge?.score??null,
+    application_percent:p[code].levels?.application?.score??null,
+    reasoning_percent:p[code].levels?.reasoning?.score??null,
+    kwl_k:p[code].kwl.k,kwl_w:p[code].kwl.w,kwl_l:p[code].kwl.l
+  }).catch(()=>{});
 }
 function openLesson(code){
   code=String(code||'').trim().toUpperCase();
@@ -86,6 +137,14 @@ function finishMastery(){
   const status=score>=l.masteryThreshold&&weak.length===0?'mastered':'needs_support';
   const p=progress();p[l.code]={...(p[l.code]||{}),code:l.code,title:l.title,score,levels,status,lastAttemptAt:new Date().toISOString(),kwl:{k:$('#kwlK').value,w:$('#kwlW').value,l:$('#kwlL').value}};save(LS.progress,p);
   $('#masteryDiagnosis').innerHTML=`<div class="diagnosis ${status}"><h3>${status==='mastered'?'أحسنت، أتقنت الدرس':'تشخيصك جاهز'}</h3><div class="level-results">${Object.values(levels).map(v=>'<div><span>'+v.label+'</span><b>'+v.score+'%</b></div>').join('')}</div><p>${status==='mastered'?'انتقل إلى تحدٍ إثرائي: أنشئ مثالًا جديدًا واشرح سبب صحة استخدام المهارة فيه.':'تحتاج إلى تدريب إضافي في: '+weak.map(x=>x.label).join('، ')+'. ستعود للجزئية المرتبطة بها بدل إعادة الدرس كاملًا.'}</p></div>`;
+  TamakkunAPI.saveProgress({
+    lesson_code:l.code,score,
+    knowledge_percent:levels.knowledge.score,
+    application_percent:levels.application.score,
+    reasoning_percent:levels.reasoning.score,
+    status,
+    kwl_k:$('#kwlK').value,kwl_w:$('#kwlW').value,kwl_l:$('#kwlL').value
+  }).catch(()=>toast('حُفظت النتيجة محليًا وتعذر مزامنتها مؤقتًا'));
   updateStats();renderResults();toast('تم حفظ نتيجة الإتقان');
 }
 function updateStats(){
@@ -101,7 +160,17 @@ function renderResults(){
   host.innerHTML=vals.map(r=>`<article class="result-card"><div><span class="eyebrow">${esc(r.code)}</span><h3>${esc(r.title)}</h3></div><strong class="big-score">${Number.isFinite(r.score)?r.score+'%':'قيد التعلم'}</strong>${r.levels?'<div class="result-levels"><span>معرفة <b>'+r.levels.knowledge.score+'%</b></span><span>تطبيق <b>'+r.levels.application.score+'%</b></span><span>استدلال <b>'+r.levels.reasoning.score+'%</b></span></div>':''}<p>${r.status==='mastered'?'متقن — انتقل إلى الإثراء.':r.status==='needs_support'?'يحتاج تدريبًا علاجيًا موجهًا.':'أكمل رحلة الدرس.'}</p></article>`).join('');
 }
 $('#paperFile').addEventListener('change',e=>{const f=e.target.files[0];state.fileData=null;$('#paperPreview').innerHTML='';if(!f)return;if(f.size>1600000){$('#paperFeedback').textContent='الصورة كبيرة. اختر صورة أقل من 1.6MB للتجربة الحالية.';e.target.value='';return;}const rd=new FileReader();rd.onload=()=>{state.fileData=rd.result;$('#paperPreview').innerHTML='<img src="'+rd.result+'" alt="معاينة العمل">'};rd.readAsDataURL(f)});
-$('#paperUploadForm').addEventListener('submit',e=>{e.preventDefault();if(!state.fileData){$('#paperFeedback').textContent='اختر صورة العمل أولًا.';return;}const arr=submissions();arr.unshift({id:'SUB-'+Date.now(),studentId:D.demoStudent.id,studentName:D.demoStudent.name,lessonCode:$('#paperLesson').value,lessonTitle:D.lessons[$('#paperLesson').value]?.title||'',type:$('#paperType').value,image:state.fileData,status:'pending',createdAt:new Date().toISOString(),teacherNote:'',correctedImage:null});save(LS.submissions,arr);state.fileData=null;e.target.reset();$('#paperPreview').innerHTML='';$('#paperFeedback').textContent='تم رفع العمل للمعلم ✓';renderSubmissions();updateStats()});
+$('#paperUploadForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!state.fileData){$('#paperFeedback').textContent='اختر صورة العمل أولًا.';return;}
+  const btn=e.currentTarget.querySelector('button[type="submit"]');btn.disabled=true;$('#paperFeedback').textContent='جارٍ رفع العمل...';
+  try{
+    await TamakkunAPI.submitPaper({lesson_code:$('#paperLesson').value,work_type:$('#paperType').value,image_data_url:state.fileData});
+    state.fileData=null;e.currentTarget.reset();$('#paperPreview').innerHTML='';
+    await hydrateRemote();renderSubmissions();updateStats();$('#paperFeedback').textContent='تم رفع العمل للمعلم ✓';
+  }catch(err){$('#paperFeedback').textContent='تعذر رفع العمل. حاول مرة أخرى.'}
+  finally{btn.disabled=false}
+});
 function renderSubmissions(){
   const arr=submissions(),host=$('#mySubmissions');
   if(!arr.length){host.innerHTML='<div class="empty-mini">لم ترفع أي عمل بعد.</div>';return;}
@@ -130,22 +199,30 @@ function renderLearningResult(saved=learningPrefs()){
   const tips={visual:'سنكثر لك من الخرائط والمقارنات والتنظيم البصري.',verbal:'سنقدم لك شروحًا مختصرة ومتسلسلة مع أمثلة واضحة.',active:'سنكثر لك من السحب والترتيب والتجربة والتغذية الراجعة.'};
   host.innerHTML='<article class="learning-result-card"><span class="eyebrow">تفضيل حالي قابل للتغير</span><h3>'+labels[saved.primary]+'</h3><p>'+tips[saved.primary]+'</p><div class="preference-bars">'+Object.entries(saved.scores||{}).map(([k,v])=>'<div><span>'+({visual:'بصري',verbal:'لفظي',active:'عملي'}[k])+'</span><b>'+v+'</b></div>').join('')+'</div></article>';
 }
-$('#learningForm')?.addEventListener('submit',e=>{
+$('#learningForm')?.addEventListener('submit',async e=>{
   e.preventDefault();
   const answers={},scores={visual:0,verbal:0,active:0};
   for(const q of learningQuestions){const checked=document.querySelector('input[name="'+q.id+'"]:checked'); if(!checked){toast('أجب عن جميع بنود تفضيلات التعلم');return;} answers[q.id]=checked.value;scores[checked.value]++;}
   const primary=Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
-  const data={answers,scores,primary,updatedAt:new Date().toISOString()}; save(LS.learning,data);renderLearningResult(data);toast('تم حفظ تفضيلات تعلمك');
+  const data={answers,scores,primary,updatedAt:new Date().toISOString()};
+  save(LS.learning,data);renderLearningResult(data);
+  try{await TamakkunAPI.saveLearning({responses:answers,visual_score:scores.visual,verbal_score:scores.verbal,active_score:scores.active,primary_preference:primary});toast('تم حفظ تفضيلات تعلمك');}
+  catch{toast('حُفظت محليًا وتعذرت المزامنة مؤقتًا');}
 });
 $('#portfolioFile')?.addEventListener('change',e=>{
   const f=e.target.files[0];state.portfolioFileData=null;$('#portfolioPreview').innerHTML='';if(!f)return;
   if(f.size>1600000){$('#portfolioFeedback').textContent='الصورة كبيرة. اختر صورة أقل من 1.6MB في النسخة التجريبية.';e.target.value='';return;}
   const rd=new FileReader();rd.onload=()=>{state.portfolioFileData=rd.result;$('#portfolioPreview').innerHTML='<img src="'+rd.result+'" alt="معاينة العمل">'};rd.readAsDataURL(f);
 });
-$('#portfolioForm')?.addEventListener('submit',e=>{
+$('#portfolioForm')?.addEventListener('submit',async e=>{
   e.preventDefault();if(!state.portfolioFileData){$('#portfolioFeedback').textContent='اختر صورة العمل أولًا.';return;}
-  const arr=portfolioItems();arr.unshift({id:'PORT-'+Date.now(),studentId:D.demoStudent.id,title:$('#portfolioTitle').value.trim(),category:$('#portfolioCategory').value,reflection:$('#portfolioReflection').value.trim(),image:state.portfolioFileData,createdAt:new Date().toISOString()});
-  save(LS.portfolio,arr);state.portfolioFileData=null;e.target.reset();$('#portfolioPreview').innerHTML='';$('#portfolioFeedback').textContent='تمت إضافة العمل إلى ملف إنجازك ✓';renderPortfolio();
+  const btn=e.currentTarget.querySelector('button[type="submit"]');btn.disabled=true;$('#portfolioFeedback').textContent='جارٍ الحفظ...';
+  try{
+    await TamakkunAPI.addPortfolio({title:$('#portfolioTitle').value.trim(),category:$('#portfolioCategory').value,reflection:$('#portfolioReflection').value.trim(),image_data_url:state.portfolioFileData});
+    state.portfolioFileData=null;e.currentTarget.reset();$('#portfolioPreview').innerHTML='';
+    await hydrateRemote();renderPortfolio();$('#portfolioFeedback').textContent='تمت إضافة العمل إلى ملف إنجازك ✓';
+  }catch{ $('#portfolioFeedback').textContent='تعذر حفظ العمل. حاول مرة أخرى.'; }
+  finally{btn.disabled=false}
 });
 function renderPortfolio(){
   const host=$('#myPortfolio');if(!host)return;const arr=portfolioItems();
@@ -164,5 +241,9 @@ function renderProgressSummary(){
   host.innerHTML='<div class="progress-hero-card"><div><span class="eyebrow">مستواك الحالي في المادة</span><h3>'+level+'</h3><p>يبنى هذا المستوى على نتائج الدروس التي أكملتها، ويتحدث مع تقدمك.</p></div><strong>'+avg+'%</strong></div><div class="progress-diagnostics"><div><span>الدروس المتقنة</span><b>'+mastered+' / '+scored.length+'</b></div><div><span>نقطة القوة الحالية</span><b>'+levelLabels[strongest]+' '+avgs[strongest]+'%</b></div><div><span>أولوية التحسين</span><b>'+levelLabels[weakest]+' '+avgs[weakest]+'%</b></div></div>';
 }
 
-updateStats();renderResults();renderSubmissions();renderPortfolio();renderLearningPreferences();renderProgressSummary();
+(async()=>{
+  try{await hydrateRemote();}
+  catch{toast('تعذر تحميل آخر بياناتك؛ ستظهر النسخة المحفوظة مؤقتًا.');}
+  updateStats();renderResults();renderSubmissions();renderPortfolio();renderLearningPreferences();renderProgressSummary();
+})();
 })();
