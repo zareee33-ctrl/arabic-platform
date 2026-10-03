@@ -1,7 +1,7 @@
 (()=>{'use strict';
 const D=window.TAMAKKUN_DATA;
-const LS={progress:'tamakkun_progress_v1',submissions:'tamakkun_submissions_v1'};
-const state={lesson:null,answers:{},kwl:{},fileData:null};
+const LS={progress:'tamakkun_progress_v1',submissions:'tamakkun_submissions_v1',portfolio:'tamakkun_portfolio_v1',learning:'tamakkun_learning_preferences_v1'};
+const state={lesson:null,answers:{},kwl:{},fileData:null,portfolioFileData:null};
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const load=(k,fallback)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(fallback))}catch{return fallback}};
 const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
@@ -9,8 +9,8 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&
 const progress=()=>load(LS.progress,{});
 const submissions=()=>load(LS.submissions,[]);
 const toast=msg=>{const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)};
-const titles={home:'مرحبًا بك في لغتي',journey:'رحلة الدرس',papers:'أعمالي الورقية',results:'نتائجي'};
-window.switchView=id=>{ $$('.view').forEach(v=>v.classList.toggle('active-view',v.id===id)); $$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===id)); $('#pageTitle').textContent=titles[id]||'مِنَصَّةُ تَمَكُّن'; window.scrollTo({top:0,behavior:'smooth'}); if(id==='papers')renderSubmissions(); if(id==='results')renderResults(); };
+const titles={home:'مرحبًا بك في لغتي',journey:'رحلة الدرس',papers:'أعمالي الورقية',portfolio:'ملف إنجازي',learning:'تفضيلات تعلمي',results:'تقدمي ونتائجي'};
+window.switchView=id=>{ $$('.view').forEach(v=>v.classList.toggle('active-view',v.id===id)); $$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===id)); $('#pageTitle').textContent=titles[id]||'مِنَصَّةُ تَمَكُّن'; window.scrollTo({top:0,behavior:'smooth'}); if(id==='papers')renderSubmissions(); if(id==='portfolio')renderPortfolio(); if(id==='learning')renderLearningPreferences(); if(id==='results'){renderResults();renderProgressSummary();} };
 $$('.nav-item').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
 $('#menuBtn').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));
 
@@ -108,5 +108,61 @@ function renderSubmissions(){
   const status={pending:'بانتظار التصحيح',needs_revision:'يحتاج تعديل',approved:'معتمد'};
   host.innerHTML=arr.map(s=>`<article class="submission-item"><img src="${s.correctedImage||s.image}" alt=""><div><b>${esc(s.lessonTitle)}</b><small>${esc(s.type)} • ${status[s.status]||s.status}</small>${s.teacherNote?'<p>ملاحظة المعلم: '+esc(s.teacherNote)+'</p>':''}</div></article>`).join('');
 }
-updateStats();renderResults();renderSubmissions();
+
+const portfolioItems=()=>load(LS.portfolio,[]);
+const learningPrefs=()=>load(LS.learning,{});
+const learningQuestions=[
+  {id:'q1',text:'عندما أتعلم فكرة جديدة أفضل أن...',options:[['visual','أراها في مخطط أو مثال بصري'],['verbal','أسمع أو أقرأ شرحًا واضحًا'],['active','أجربها بنفسي مباشرة']]},
+  {id:'q2',text:'عندما يصعب عليّ درس ما يساعدني أكثر...',options:[['visual','جدول أو خريطة مفاهيم'],['verbal','شرح خطوة بخطوة'],['active','تدريب قصير مع تغذية راجعة']]},
+  {id:'q3',text:'عند المراجعة أميل إلى...',options:[['visual','الصور والتنظيم البصري'],['verbal','التلخيص والقراءة بصوت داخلي'],['active','حل أسئلة وبناء أمثلة']]},
+  {id:'q4',text:'أفهم المهارة أسرع عندما...',options:[['visual','أرى الفرق بين مثالين'],['verbal','أقرأ القاعدة مع مثال'],['active','أحرك وأرتب وأختار وأجرب']]}
+];
+function renderLearningPreferences(){
+  const saved=learningPrefs(), host=$('#learningAssessment');
+  if(!host)return;
+  host.innerHTML=learningQuestions.map((q,i)=>'<fieldset class="learning-q"><legend>'+(i+1)+'. '+esc(q.text)+'</legend>'+q.options.map(o=>'<label><input type="radio" name="'+q.id+'" value="'+o[0]+'" '+(saved.answers?.[q.id]===o[0]?'checked':'')+'> <span>'+esc(o[1])+'</span></label>').join('')+'</fieldset>').join('');
+  renderLearningResult(saved);
+}
+function renderLearningResult(saved=learningPrefs()){
+  const host=$('#learningResult'); if(!host)return;
+  if(!saved.primary){host.innerHTML='<div class="empty-state"><strong>لم تسجل تفضيلاتك بعد</strong><p>أجب عن الاستبانة القصيرة؛ ستستخدم النتيجة لتنويع طريقة عرض الدروس، وليس لوضعك في تصنيف ثابت.</p></div>';return;}
+  const labels={visual:'تميل حاليًا إلى العرض البصري',verbal:'تميل حاليًا إلى الشرح اللفظي المنظم',active:'تميل حاليًا إلى التعلم بالممارسة'};
+  const tips={visual:'سنكثر لك من الخرائط والمقارنات والتنظيم البصري.',verbal:'سنقدم لك شروحًا مختصرة ومتسلسلة مع أمثلة واضحة.',active:'سنكثر لك من السحب والترتيب والتجربة والتغذية الراجعة.'};
+  host.innerHTML='<article class="learning-result-card"><span class="eyebrow">تفضيل حالي قابل للتغير</span><h3>'+labels[saved.primary]+'</h3><p>'+tips[saved.primary]+'</p><div class="preference-bars">'+Object.entries(saved.scores||{}).map(([k,v])=>'<div><span>'+({visual:'بصري',verbal:'لفظي',active:'عملي'}[k])+'</span><b>'+v+'</b></div>').join('')+'</div></article>';
+}
+$('#learningForm')?.addEventListener('submit',e=>{
+  e.preventDefault();
+  const answers={},scores={visual:0,verbal:0,active:0};
+  for(const q of learningQuestions){const checked=document.querySelector('input[name="'+q.id+'"]:checked'); if(!checked){toast('أجب عن جميع بنود تفضيلات التعلم');return;} answers[q.id]=checked.value;scores[checked.value]++;}
+  const primary=Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
+  const data={answers,scores,primary,updatedAt:new Date().toISOString()}; save(LS.learning,data);renderLearningResult(data);toast('تم حفظ تفضيلات تعلمك');
+});
+$('#portfolioFile')?.addEventListener('change',e=>{
+  const f=e.target.files[0];state.portfolioFileData=null;$('#portfolioPreview').innerHTML='';if(!f)return;
+  if(f.size>1600000){$('#portfolioFeedback').textContent='الصورة كبيرة. اختر صورة أقل من 1.6MB في النسخة التجريبية.';e.target.value='';return;}
+  const rd=new FileReader();rd.onload=()=>{state.portfolioFileData=rd.result;$('#portfolioPreview').innerHTML='<img src="'+rd.result+'" alt="معاينة العمل">'};rd.readAsDataURL(f);
+});
+$('#portfolioForm')?.addEventListener('submit',e=>{
+  e.preventDefault();if(!state.portfolioFileData){$('#portfolioFeedback').textContent='اختر صورة العمل أولًا.';return;}
+  const arr=portfolioItems();arr.unshift({id:'PORT-'+Date.now(),studentId:D.demoStudent.id,title:$('#portfolioTitle').value.trim(),category:$('#portfolioCategory').value,reflection:$('#portfolioReflection').value.trim(),image:state.portfolioFileData,createdAt:new Date().toISOString()});
+  save(LS.portfolio,arr);state.portfolioFileData=null;e.target.reset();$('#portfolioPreview').innerHTML='';$('#portfolioFeedback').textContent='تمت إضافة العمل إلى ملف إنجازك ✓';renderPortfolio();
+});
+function renderPortfolio(){
+  const host=$('#myPortfolio');if(!host)return;const arr=portfolioItems();
+  if(!arr.length){host.innerHTML='<div class="empty-state"><strong>ملف إنجازك ما زال فارغًا</strong><p>أضف أفضل أعمالك، واذكر ما تعلمته من كل عمل.</p></div>';return;}
+  host.innerHTML=arr.map(x=>'<article class="portfolio-item"><img src="'+x.image+'" alt=""><div><span>'+esc(x.category)+'</span><h4>'+esc(x.title)+'</h4><p>'+esc(x.reflection||'لم يضف تأملًا بعد.')+'</p><small>'+new Date(x.createdAt).toLocaleDateString('ar-SA')+'</small></div></article>').join('');
+}
+function renderProgressSummary(){
+  const host=$('#studentProgressSummary');if(!host)return;const vals=Object.values(progress()),scored=vals.filter(x=>Number.isFinite(x.score));
+  if(!scored.length){host.innerHTML='<div class="empty-state"><strong>لم يتكون مستوى بعد</strong><p>أكمل قياس إتقان في درس واحد على الأقل.</p></div>';return;}
+  const avg=Math.round(scored.reduce((a,b)=>a+b.score,0)/scored.length), mastered=scored.filter(x=>x.status==='mastered').length;
+  const level=avg>=90?'متقدم':avg>=80?'متقن':avg>=65?'نامٍ':'يحتاج دعمًا';
+  const levelKeys=['knowledge','application','reasoning'], levelLabels={knowledge:'المعرفة',application:'التطبيق',reasoning:'الاستدلال'};
+  const agg={knowledge:[],application:[],reasoning:[]};scored.forEach(r=>r.levels&&levelKeys.forEach(k=>agg[k].push(r.levels[k].score)));
+  const avgs={};levelKeys.forEach(k=>avgs[k]=agg[k].length?Math.round(agg[k].reduce((a,b)=>a+b,0)/agg[k].length):0);
+  const strongest=levelKeys.sort((a,b)=>avgs[b]-avgs[a])[0], weakest=levelKeys.sort((a,b)=>avgs[a]-avgs[b])[0];
+  host.innerHTML='<div class="progress-hero-card"><div><span class="eyebrow">مستواك الحالي في المادة</span><h3>'+level+'</h3><p>يبنى هذا المستوى على نتائج الدروس التي أكملتها، ويتحدث مع تقدمك.</p></div><strong>'+avg+'%</strong></div><div class="progress-diagnostics"><div><span>الدروس المتقنة</span><b>'+mastered+' / '+scored.length+'</b></div><div><span>نقطة القوة الحالية</span><b>'+levelLabels[strongest]+' '+avgs[strongest]+'%</b></div><div><span>أولوية التحسين</span><b>'+levelLabels[weakest]+' '+avgs[weakest]+'%</b></div></div>';
+}
+
+updateStats();renderResults();renderSubmissions();renderPortfolio();renderLearningPreferences();renderProgressSummary();
 })();
