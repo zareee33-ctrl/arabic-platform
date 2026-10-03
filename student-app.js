@@ -2,7 +2,7 @@
 const D=window.TAMAKKUN_DATA;
 const session=window.TamakkunAPI?.requireRole('student','student.html');
 if(!session)return;
-const LS={progress:'tamakkun_progress_v1',submissions:'tamakkun_submissions_v1',portfolio:'tamakkun_portfolio_v1',learning:'tamakkun_learning_preferences_v1'};
+const cacheSuffix='_'+session.user.id;const LS={progress:'tamakkun_progress_v1'+cacheSuffix,submissions:'tamakkun_submissions_v1'+cacheSuffix,portfolio:'tamakkun_portfolio_v1'+cacheSuffix,learning:'tamakkun_learning_preferences_v1'+cacheSuffix};
 const state={lesson:null,answers:{},kwl:{},fileData:null,portfolioFileData:null};
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const load=(k,fallback)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(fallback))}catch{return fallback}};
