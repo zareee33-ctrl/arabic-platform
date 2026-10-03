@@ -18,6 +18,7 @@
       <button data-tview="portfolio">ملفات الإنجاز</button>
       <button data-tview="learning">تفضيلات التعلم</button>
       <button data-tview="papers">أعمال الطلاب</button>
+      <button data-tview="commands">مركز الأوامر</button>
       <button data-tview="analytics">المستوى والتقدم</button>
     </nav>
     <a href="#" class="side-exit" id="teacherLogoutBtn">تسجيل الخروج</a>
@@ -131,6 +132,35 @@
       </div>
     </section>
 
+    <section class="teacher-view" id="t-commands">
+      <div class="teacher-section-head">
+        <div><span class="eyebrow">تنفيذ مباشر وآمن</span><h2>مركز الأوامر</h2><p>اكتب أمرًا واضحًا، وسيُنفذ مباشرة على المنصة بصلاحيات المعلم مع سجل تدقيق وإمكانية تراجع للعمليات المدعومة.</p></div>
+      </div>
+      <div class="command-layout">
+        <div class="teacher-card command-entry">
+          <span class="eyebrow">أمر جديد</span>
+          <h3>ماذا تريد أن تنفذ؟</h3>
+          <form id="commandForm">
+            <textarea id="commandInput" rows="4" placeholder="مثال: افتح درس الحال" required></textarea>
+            <div class="command-actions"><button type="submit" id="runCommandBtn">تنفيذ الآن</button></div>
+          </form>
+          <p class="admin-form-message" id="commandMessage"></p>
+          <div class="command-examples" id="commandExamples">
+            <button type="button">افتح درس الحال</button>
+            <button type="button">أغلق درس HAL-01</button>
+            <button type="button">غيّر الإتقان لدرس الحال إلى 85</button>
+            <button type="button">أسند علاج درس الحال للطالب S3A001</button>
+            <button type="button">اختبر النظام</button>
+          </div>
+          <div id="commandResult" class="command-result"></div>
+        </div>
+        <div class="teacher-card command-history">
+          <div class="student-list-head"><div><span class="eyebrow">سجل التدقيق</span><h3>آخر العمليات</h3></div><button id="refreshCommands" type="button">تحديث</button></div>
+          <div id="commandLog"></div>
+        </div>
+      </div>
+    </section>
+
     <section class="teacher-view" id="t-analytics">
       <div class="teacher-section-head"><div><span class="eyebrow">متابعة شاملة لكل طالب</span><h2>المستوى والتقدم في المادة</h2><p>المستوى مبني على نتائج الدروس الفعلية، مع تفصيل المعرفة والتطبيق والاستدلال، وعدد الدروس المتقنة، وأولوية التدخل.</p></div></div>
       <div id="studentProgressTable" class="student-progress-table"></div>
@@ -141,5 +171,6 @@
 <script src="api.js"></script>
 <script src="platform-data.js"></script>
 <script src="teacher-app.js"></script>
+<script src="command-console.js"></script>
 </body>
 </html>
