@@ -31,16 +31,28 @@
       <label><span>الرقم السري</span><input id="teacherPassword" type="password" autocomplete="current-password" placeholder="••••••••" required></label>
       <button class="auth-submit" type="submit">دخول المعلم</button>
       <div class="auth-message" id="teacherMessage" aria-live="polite"></div>
-      <a class="preview-link" href="teacher-app.html">معاينة لوحة المعلم الجديدة</a>
+      <small class="preview-link">اسم المستخدم الافتراضي للمعلم: TEACHER1</small>
     </form>
   </section>
 </main>
+<script src="api.js"></script>
 <script>
-document.getElementById('teacherLoginForm').addEventListener('submit',function(e){
+document.getElementById('teacherLoginForm').addEventListener('submit',async function(e){
   e.preventDefault();
   const box=document.getElementById('teacherMessage');
-  box.textContent='واجهة المعلم منفصلة الآن. تفعيل كلمة المرور الحقيقية سيتم عند ربط قاعدة البيانات.';
-  box.className='auth-message show';
+  const btn=this.querySelector('button[type="submit"]');
+  box.className='auth-message show';box.textContent='جارٍ التحقق من الحساب...';btn.disabled=true;
+  try{
+    const data=await TamakkunAPI.login(
+      document.getElementById('teacherUsername').value,
+      document.getElementById('teacherPassword').value
+    );
+    if(!['teacher','admin'].includes(data.user.role)){TamakkunAPI.clearSession();throw new Error('not_teacher')}
+    location.href='teacher-app.html';
+  }catch(err){
+    box.textContent='تعذر تسجيل الدخول. تأكد من اسم المستخدم والرقم السري.';
+    btn.disabled=false;
+  }
 });
 </script>
 </body>
