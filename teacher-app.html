@@ -58,12 +58,25 @@
     </section>
 
     <section class="teacher-view" id="t-profile">
-      <div class="teacher-section-head profile-heading">
-        <div><span class="eyebrow">ملف الطالب الشامل</span><h2 id="profileStudentName">الطالب</h2><p id="profileStudentMeta"></p></div>
+      <div class="profile-toolbar">
         <button class="profile-back" data-go="students">← العودة إلى الطلاب</button>
+        <div class="profile-toolbar-text"><span>الطلاب</span><b>/</b><strong>ملف الطالب الشامل</strong></div>
       </div>
+
+      <section class="profile-identity-card">
+        <div class="profile-avatar">ط</div>
+        <div class="profile-identity-main">
+          <span class="eyebrow">ملف الطالب الشامل</span>
+          <h2 id="profileStudentName">الطالب</h2>
+          <p id="profileStudentMeta"></p>
+          <div class="profile-mini-badges"><span>لغتي الخالدة</span><span>الفصل الدراسي الأول</span></div>
+        </div>
+        <div id="profileStatusBadge" class="profile-status-box"></div>
+      </section>
+
       <div id="studentProfileOverview"></div>
-      <div class="profile-tabs">
+
+      <div class="profile-tabs" role="tablist" aria-label="أقسام ملف الطالب">
         <button class="active" data-profile-tab="overview">نظرة عامة</button>
         <button data-profile-tab="lessons">الدروس والنتائج</button>
         <button data-profile-tab="portfolio">ملف الإنجاز</button>
