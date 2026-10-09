@@ -7,9 +7,10 @@
 <title>مساحة الطالب | مِنَصَّةُ تَمَكُّن</title>
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="book-course.css">
+<link rel="stylesheet" href="tamakkun-ui.css?v=20261009">
 </head>
-<body>
-<div class="app-shell">
+<body class="tk-workspace">
+<a class="tk-skip" href="#main-content">تجاوز إلى المحتوى</a><div class="app-shell">
   <aside class="sidebar" id="sidebar">
     <div class="brand"><div class="brand-mark">ض</div><div><h1>مِنَصَّةُ تَمَكُّن</h1><p>لغتي الخالدة • ثالث متوسط</p></div></div>
     <div class="student-card"><div class="avatar">ط</div><div><strong id="studentName">الطالب التجريبي</strong><small>ثالث متوسط</small></div><span class="score" id="overallScore">—</span></div>
@@ -25,20 +26,20 @@
     <div class="side-note"><strong>رحلة الإتقان</strong><p>اكتشف • افهم • طبّق • أتقن • عالج ما تحتاجه.</p></div>
   </aside>
 
-  <main class="main">
+  <main class="main" id="main-content">
     <header class="topbar">
-      <button class="menu-btn" id="menuBtn">☰</button>
+      <button class="menu-btn" id="menuBtn" aria-label="فتح قائمة الطالب" aria-controls="sidebar" aria-expanded="false">☰</button>
       <div><span class="eyebrow">تعلّم • طبّق • أتقن</span><h2 id="pageTitle">مرحبًا بك في لغتي</h2></div>
       <div class="top-actions"><span class="streak">رحلتك محفوظة في حسابك</span><a class="ghost" href="#" id="logoutBtn">خروج</a></div>
     </header>
 
     <section id="home" class="view active-view">
       <div class="hero">
-        <div><span class="pill">الكتاب الآن تفاعلي</span><h3>تعلم الدرس بالممارسة لا بالمشاهدة فقط</h3><p>افتح كتابك التفاعلي لتتعلم عبر التشخيص، التصنيف، الترتيب، بناء الجمل، التسجيل، والتغذية الراجعة الفورية.</p><button class="primary" type="button" id="openBookFromHome">فتح كتابي التفاعلي</button></div>
+        <div><span class="pill">الكتاب الآن تفاعلي</span><h3>لغتك أقوى،<br>مع كل خطوة تتعلمها.</h3><p>افتح كتابك التفاعلي لتتعلم عبر التشخيص، التصنيف، الترتيب، بناء الجمل، التسجيل، والتغذية الراجعة الفورية.</p><button class="primary" type="button" id="openBookFromHome">فتح كتابي التفاعلي</button></div>
         <div class="progress-ring"><div class="ring" id="homeRing"><span id="homeRingText">0%</span></div><small>متوسط الإتقان</small></div>
       </div>
 
-      <div class="code-launch card">
+      <div class="tk-section-title tk-workspace-title"><div><span class="tk-eyebrow">مساحتك التعليمية</span><h2>ماذا تريد أن تتعلّم اليوم؟</h2></div></div><div class="tk-quick-grid"><button type="button" class="tk-quick-card" data-tk-view="book"><span class="tk-icon mint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Zm0 0v14"/></svg></span><strong>كتابي التفاعلي</strong><small>الوحدات والدروس والأنشطة</small><span class="tk-quick-arrow">←</span></button><button type="button" class="tk-quick-card" data-tk-view="papers"><span class="tk-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 4 5 5M4 20l5-1L21 7a2 2 0 0 0-5-5L4 14v6Z"/></svg></span><strong>أعمالي الورقية</strong><small>رفع الأعمال ومراجعة التصحيح</small><span class="tk-quick-arrow">←</span></button><button type="button" class="tk-quick-card" data-tk-view="portfolio"><span class="tk-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V4h7l3 3h8v13H3V7Z"/></svg></span><strong>ملف إنجازي</strong><small>أعمالي وشواهد تقدمي</small><span class="tk-quick-arrow">←</span></button><button type="button" class="tk-quick-card" data-tk-view="results"><span class="tk-icon rose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v18h17M8 16v-4m5 4V8m5 8V5"/></svg></span><strong>تقدمي ونتائجي</strong><small>مستوى الإتقان وأولوية المراجعة</small><span class="tk-quick-arrow">←</span></button></div><div class="code-launch card">
         <div class="card-title"><span>⌁</span><div><small>كود أو QR</small><h3>أدخل كود الدرس</h3></div></div>
         <form id="lessonCodeForm" class="code-form">
           <input id="lessonCodeInput" autocomplete="off" placeholder="مثال: HAL-01" required>
@@ -55,9 +56,9 @@
         <article><span>تحتاج مراجعة</span><strong id="statReview">0</strong><small>مسارات علاجية</small></article>
       </div>
 
-      <div class="section-head"><div><span class="eyebrow">كيف تعمل المنصة؟</span><h3>المسار لا يعتمد على أسئلة فقط</h3></div></div>
+      <div class="section-head"><div><span class="eyebrow">كيف تعمل المنصة؟</span><h3>من البداية إلى الإتقان</h3></div></div>
       <div class="path-grid">
-        <article class="path-card"><span>1</span><div><strong>K • ماذا أعرف؟</strong><small>تشخيص قبلي سريع</small></div></article>
+        <article class="path-card"><span>1</span><div><strong>ماذا أعرف؟</strong><small>تشخيص قبلي سريع</small></div></article>
         <article class="path-card"><span>2</span><div><strong>اكتشف وتفاعل</strong><small>لمس واختيار ومقارنة</small></div></article>
         <article class="path-card"><span>3</span><div><strong>معرفة • تطبيق • استدلال</strong><small>قياس منفصل لكل مستوى</small></div></article>
         <article class="path-card"><span>4</span><div><strong>علاج أو إثراء</strong><small>بحسب حاجتك الفعلية</small></div></article>
@@ -145,5 +146,6 @@
 <script src="book-course-data.js"></script>
 <script src="student-app.js"></script>
 <script src="book-course.js"></script>
+<script src="tamakkun-ui.js?v=20261009"></script>
 </body>
 </html>

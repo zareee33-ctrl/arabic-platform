@@ -3,39 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#173f35">
-<title>دخول الطالب | مِنَصَّةُ تَمَكُّن</title>
+<meta name="theme-color" content="#087f72">
+<meta name="description" content="تمكّن — منصة لغتي الخالدة للصف الثالث المتوسط. كتاب تفاعلي، تدريبات إتقان، وأعمال ورقية ومتابعة تقدم الطالب.">
+<title>دخول الطالب | منصة تمكّن</title>
 <link rel="stylesheet" href="portal.css">
+<link rel="stylesheet" href="tamakkun-ui.css?v=20261009">
 </head>
-<body class="auth-body">
-<main class="auth-layout">
-  <section class="auth-brand">
-    <a href="index.html" class="back-home">← الرئيسية</a>
-    <div class="brand-lockup">
-      <div class="brand-mark">ض</div>
-      <div><span class="eyebrow">لغتي الخالدة</span><h1>مِنَصَّةُ تَمَكُّن</h1></div>
-    </div>
-    <h2>بوابة الطالب</h2>
-    <p>ادخل بحسابك الشخصي، ثم استخدم كود الدرس الذي يرسله المعلم لبدء رحلة التعلم.</p>
-    <ul>
-      <li>حساب مستقل لكل طالب</li>
-      <li>تقدم ونتائج محفوظة</li>
-      <li>رفع الأعمال الورقية ومشاهدة تصحيح المعلم</li>
-    </ul>
-  </section>
-
-  <section class="auth-panel">
-    <form class="auth-card" id="studentLoginForm">
-      <div class="auth-title"><span>طالب</span><h2>تسجيل الدخول</h2><p>أدخل رمز الطالب والرقم السري.</p></div>
+<body class="tk-public tk-auth-page"><a class="tk-skip" href="#main-content">تجاوز إلى المحتوى</a><div class="tk-notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3Z"/></svg><span>كل خطوة تتعلمها اليوم، تصنع فرقًا غدًا.</span></div><header class="tk-header"><div class="tk-container tk-header-inner"><a class="tk-brand" href="index.html" aria-label="تمكّن — الرئيسية"><span class="tk-mark">ض</span><span><strong>تَمَكُّن</strong><small>لغتي الخالدة · ثالث متوسط</small></span></a><nav class="tk-nav" aria-label="التنقل الرئيسي"><a href="index.html" >الرئيسية</a><a href="index.html#learning">مسارات التعلم</a><a href="index.html#teachers">أدوات المعلم</a></nav><a class="tk-header-login" href="teacher.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M16 4a3 3 0 0 1 0 6m3 11v-3a6 6 0 0 0-2-4"/></svg>دخول المعلم</a></div></header><main id="main-content"><section class="tk-container tk-auth-grid"><div class="tk-hero-copy"><span class="tk-kicker"><i></i>مساحة الطالب</span><h1>كل درس،<br><em>خطوة نحو الإتقان.</em></h1><p class="tk-lead">مساحتك لتفهم، وتتدرّب، وتكتشف قدراتك. سجّل الدخول وواصل رحلة تعلمك في لغتي الخالدة.</p><ul class="tk-benefits"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/><circle cx="12" cy="12" r="10"/></svg>كتاب تفاعلي وأنشطة متنوعة</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/><circle cx="12" cy="12" r="10"/></svg>ملاحظات تساعدك على التحسن</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/><circle cx="12" cy="12" r="10"/></svg>نتائجك وتقدمك في مكان واحد</li></ul><a class="tk-text-link" href="index.html">تعرّف على المنصة ←</a></div><div class="tk-form-column"><form class="auth-card" id="studentLoginForm">
+      <div class="auth-title"><div class="tk-form-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Zm0 0v14"/></svg></div><span>طالب</span><h2>تسجيل الدخول</h2><p>أدخل رمز الطالب والرقم السري.</p></div>
       <label><span>رمز الطالب</span><input id="studentCode" autocomplete="username" placeholder="مثال: S3A001" required></label>
-      <label><span>الرقم السري</span><input id="studentPassword" type="password" autocomplete="current-password" inputmode="numeric" placeholder="••••••" required></label>
+      <label><span>الرقم السري</span><span class="tk-password-wrap"><input id="studentPassword" type="password" autocomplete="current-password" inputmode="numeric" placeholder="••••••" required><button class="tk-password-toggle" type="button" aria-controls="studentPassword" aria-pressed="false">إظهار</button></span></label>
       <button class="auth-submit" type="submit">دخول الطالب</button>
       <div class="auth-message" id="studentMessage" aria-live="polite"></div>
-      <small class="preview-link">الحساب التجريبي: S3A001</small>
-    </form>
-  </section>
-</main>
-<script src="api.js"></script>
+
+    <p class="tk-login-help">رمز الطالب والرقم السري تحصل عليهما من معلمك.</p></form><p class="tk-switch-role">هل أنت معلم؟ <a href="teacher.html">انتقل إلى بوابة المعلم ←</a></p></div></section><section class="tk-container tk-section tk-auth-features"><div class="tk-section-title"><div><span class="tk-eyebrow">بعد تسجيل الدخول</span><h2>تعلّم على طريقتك، وتابع أثر جهدك</h2></div></div><div class="tk-feature-grid"><article class="tk-feature"><span class="tk-icon mint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Zm0 0v14"/></svg></span><h3>الكتاب التفاعلي</h3><p>افهم الدرس خطوة بخطوة، وجرّب ما تعلمته بأنشطة وتدريبات مباشرة.</p></article><article class="tk-feature"><span class="tk-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 4 5 5M4 20l5-1L21 7a2 2 0 0 0-5-5L4 14v6Z"/></svg></span><h3>أعمالك الورقية</h3><p>ارفع عملك، واستفد من تصحيح المعلم وملاحظاته لتحسين أدائك.</p></article><article class="tk-feature"><span class="tk-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v18h17M8 16v-4m5 4V8m5 8V5"/></svg></span><h3>تقدّمك ونتائجك</h3><p>تعرّف على نقاط قوتك وما يحتاج إلى مراجعة في رحلة الإتقان.</p></article></div></section></main><footer class="tk-footer"><div class="tk-container"><strong>تَمَكُّن <span>•</span> تعلّم، طبّق، أتقن.</strong><span>لغتي الخالدة · الصف الثالث المتوسط</span></div></footer><script src="api.js"></script>
 <script>
 document.getElementById('studentLoginForm').addEventListener('submit',async function(e){
   e.preventDefault();
@@ -55,5 +36,4 @@ document.getElementById('studentLoginForm').addEventListener('submit',async func
   }
 });
 </script>
-</body>
-</html>
+<script src="tamakkun-ui.js?v=20261009"></script></body></html>
